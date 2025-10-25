@@ -32,7 +32,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Dashboard
                                 </NavLink>
 
-                                {/* Materias (visible para Admin (1) y Coordinador (2)) */}
+                                {/* Materias (Admin: 1, Coordinador: 2) */}
                                 {(user.rol_id === 1 || user.rol_id === 2) && (
                                     <NavLink
                                         href={route('materias.index')}
@@ -42,7 +42,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </NavLink>
                                 )}
 
-                                {/* Aulas (visible para Admin (1) y Coordinador (2)) */}
+                                {/* Aulas (Admin: 1, Coordinador: 2) */}
                                 {(user.rol_id === 1 || user.rol_id === 2) && (
                                     <NavLink
                                         href={route('aulas.index')}
@@ -52,13 +52,33 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </NavLink>
                                 )}
 
-                                {/* Docentes (visible SOLO para Admin (1)) */}
+                                {/* Docentes (SOLO Admin: 1) */}
                                 {user.rol_id === 1 && (
                                     <NavLink
                                         href={route('docentes.index')}
                                         active={route().current('docentes.*')}
                                     >
                                         Docentes
+                                    </NavLink>
+                                )}
+
+                                {/* Gestiones (Admin: 1, Coordinador: 2) */}
+                                {(user.rol_id === 1 || user.rol_id === 2) && (
+                                    <NavLink
+                                        href={route('gestiones.index')}
+                                        active={route().current('gestiones.*')}
+                                    >
+                                        Gestiones
+                                    </NavLink>
+                                )}
+
+                                {/* Grupos (Admin: 1, Coordinador: 2) */}
+                                {(user.rol_id === 1 || user.rol_id === 2) && (
+                                    <NavLink
+                                        href={route('grupos.index')}
+                                        active={route().current('grupos.*')}
+                                    >
+                                        Grupos
                                     </NavLink>
                                 )}
                             </div>
@@ -194,6 +214,26 @@ export default function AuthenticatedLayout({ header, children }) {
                                 active={route().current('docentes.*')}
                             >
                                 Docentes
+                            </ResponsiveNavLink>
+                        )}
+
+                        {/* Gestiones (visible para Admin (1) y Coordinador (2)) */}
+                        {(user.rol_id === 1 || user.rol_id === 2) && (
+                            <ResponsiveNavLink
+                                href={route('gestiones.index')}
+                                active={route().current('gestiones.*')}
+                            >
+                                Gestiones
+                            </ResponsiveNavLink>
+                        )}
+
+                        {/* Grupos (visible para Admin (1) y Coordinador (2)) */}
+                        {(user.rol_id === 1 || user.rol_id === 2) && (
+                            <ResponsiveNavLink
+                                href={route('grupos.index')}
+                                active={route().current('grupos.*')}
+                            >
+                                Grupos
                             </ResponsiveNavLink>
                         )}
                     </div>
