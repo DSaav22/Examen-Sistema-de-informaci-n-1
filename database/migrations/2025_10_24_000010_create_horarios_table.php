@@ -12,10 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Primero, habilitamos la extensión btree_gist si no está habilitada
-        DB::statement('CREATE EXTENSION IF NOT EXISTS btree_gist');
+        $driver = DB::getDriverName();
 
-        Schema::create('horarios', function (Blueprint $table) {
+        if ($driver === 'pgsql') {
+            // Primero, habilitamos la extensión btree_gist si no está habilitada (solo PostgreSQL)
+            DB::statement('CREATE EXTENSION IF NOT EXISTS btree_gist');
+        }
+
+        Schema::create('horarios', function (Blueprint $table) use ($driver) {
             $table->id();
             $table->foreignId('grupo_id')->constrained('grupos')->onDelete('cascade')->comment('Relación con grupos');
             $table->foreignId('aula_id')->constrained('aulas')->onDelete('restrict')->comment('Relación con aulas');
@@ -23,46 +27,43 @@ return new class extends Migration
             $table->time('hora_inicio')->comment('Hora de inicio de la clase');
             $table->time('hora_fin')->comment('Hora de fin de la clase');
             $table->timestamps();
+            
+            // Índice único para SQLite (previene conflictos básicos)
+            if ($driver === 'sqlite') {
+                $table->unique(['aula_id', 'dia_semana', 'hora_inicio', 'hora_fin'], 'unique_horario_aula');
+            }
         });
 
-        // Restricción de exclusión para evitar conflictos de horarios en la misma aula
-        // No permite que dos horarios se solapen en el mismo aula, día y rango de horas
-        DB::statement('
-            ALTER TABLE horarios 
-            ADD CONSTRAINT horarios_no_overlap_aula 
-            EXCLUDE USING GIST (
-                aula_id WITH =,
-                dia_semana WITH =,
-                tsrange(
-                    (CURRENT_DATE + hora_inicio)::timestamp,
-                    (CURRENT_DATE + hora_fin)::timestamp
-                ) WITH &&
-            )
-        ');
+        // Restricciones avanzadas solo para PostgreSQL
+        if ($driver === 'pgsql') {
+            // Crear función IMMUTABLE para convertir TIME a intervalo
+            DB::statement("
+                CREATE OR REPLACE FUNCTION time_to_interval(t TIME)
+                RETURNS INTERVAL AS \$\$
+                BEGIN
+                    RETURN t - TIME '00:00:00';
+                END;
+                \$\$ LANGUAGE plpgsql IMMUTABLE;
+            ");
 
-        // Restricción de exclusión para evitar que un docente tenga dos clases al mismo tiempo
-        // Esta restricción se implementa a través de la relación grupo_id (que tiene docente_id)
-        DB::statement('
-            CREATE OR REPLACE FUNCTION get_docente_from_grupo(grupo_id_param INTEGER)
-            RETURNS INTEGER AS $$
-            BEGIN
-                RETURN (SELECT docente_id FROM grupos WHERE id = grupo_id_param);
-            END;
-            $$ LANGUAGE plpgsql IMMUTABLE;
-        ');
+            // Restricción de exclusión para evitar conflictos de horarios en la misma aula
+            // Esta es la restricción MÁS CRÍTICA del sistema
+            DB::statement("
+                ALTER TABLE horarios 
+                ADD CONSTRAINT horarios_no_overlap_aula 
+                EXCLUDE USING GIST (
+                    aula_id WITH =,
+                    dia_semana WITH =,
+                    tsrange(
+                        ('2000-01-01'::date + time_to_interval(hora_inicio))::timestamp,
+                        ('2000-01-01'::date + time_to_interval(hora_fin))::timestamp
+                    ) WITH &&
+                )
+            ");
 
-        DB::statement('
-            ALTER TABLE horarios 
-            ADD CONSTRAINT horarios_no_overlap_docente 
-            EXCLUDE USING GIST (
-                get_docente_from_grupo(grupo_id) WITH =,
-                dia_semana WITH =,
-                tsrange(
-                    (CURRENT_DATE + hora_inicio)::timestamp,
-                    (CURRENT_DATE + hora_fin)::timestamp
-                ) WITH &&
-            )
-        ');
+            // NOTA: La restricción de docente se maneja mediante validación en el backend
+            // ya que PostgreSQL no permite funciones que consultan otras tablas en índices GIST
+        }
     }
 
     /**
@@ -70,10 +71,13 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Primero eliminamos las restricciones
-        DB::statement('ALTER TABLE horarios DROP CONSTRAINT IF EXISTS horarios_no_overlap_docente');
-        DB::statement('ALTER TABLE horarios DROP CONSTRAINT IF EXISTS horarios_no_overlap_aula');
-        DB::statement('DROP FUNCTION IF EXISTS get_docente_from_grupo(INTEGER)');
+        $driver = DB::getDriverName();
+        
+        if ($driver === 'pgsql') {
+            // Eliminamos las restricciones y funciones
+            DB::statement('ALTER TABLE horarios DROP CONSTRAINT IF EXISTS horarios_no_overlap_aula');
+            DB::statement('DROP FUNCTION IF EXISTS time_to_interval(TIME)');
+        }
         
         Schema::dropIfExists('horarios');
     }

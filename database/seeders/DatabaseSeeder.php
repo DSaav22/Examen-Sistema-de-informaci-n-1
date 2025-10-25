@@ -12,12 +12,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Primero ejecutar el seeder de roles
+        // Ejecutar seeders en orden para respetar las llaves foráneas
         $this->call([
+            // 1. Crear roles primero (no depende de nada)
             RolesSeeder::class,
+            
+            // 2. Crear facultad (no depende de nada excepto roles)
+            FacultadSeeder::class,
+            
+            // 3. Crear carreras (depende de facultades)
+            CarreraSeeder::class,
+            
+            // 4. Crear aulas (no depende de otras tablas de negocio)
+            AulaSeeder::class,
+            
+            // 5. Crear materias (depende de carreras)
+            MateriaSeeder::class,
+            
+            // 6. Crear docentes adicionales (depende de roles y usuarios)
+            DocenteSeeder::class,
         ]);
 
-        // Crear un usuario administrador por defecto
+        // Crear usuarios de prueba principales (admin, coordinador, docente)
+        // Estos se crean después de los seeders para tener datos completos
+
         User::create([
             'name' => 'Administrador',
             'email' => 'admin@sistema.com',
@@ -29,7 +47,6 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Crear un usuario coordinador por defecto
         User::create([
             'name' => 'Coordinador',
             'email' => 'coordinador@sistema.com',
@@ -41,7 +58,6 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // Crear un usuario docente por defecto
         User::create([
             'name' => 'Docente',
             'email' => 'docente@sistema.com',

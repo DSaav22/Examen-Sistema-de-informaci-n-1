@@ -25,30 +25,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-/**
- * Rutas protegidas para gestión de Materias
- * Acceso: administrador y coordinador
- */
-Route::middleware(['auth', 'verified', 'role:administrador,coordinador'])->group(function () {
-    Route::resource('materias', MateriaController::class);
-});
+    // Rutas de Materias (Coordinador y Admin)
+    Route::middleware('role:coordinador,administrador')->group(function () {
+        Route::resource('materias', MateriaController::class);
+        Route::resource('aulas', AulaController::class);
+    });
 
-/**
- * Rutas protegidas para gestión de Aulas
- * Acceso: administrador y coordinador
- */
-Route::middleware(['auth', 'verified', 'role:administrador,coordinador'])->group(function () {
-    Route::resource('aulas', AulaController::class);
-});
-
-/**
- * Rutas protegidas para gestión de Docentes
- * Acceso: administrador y coordinador
- */
-Route::middleware(['auth', 'verified', 'role:administrador,coordinador'])->group(function () {
-    Route::resource('docentes', DocenteController::class);
+    // Rutas de Docentes (Solo Admin)
+    Route::middleware('role:administrador')->group(function () {
+        Route::resource('docentes', DocenteController::class);
+    });
 });
 
 require __DIR__.'/auth.php';
