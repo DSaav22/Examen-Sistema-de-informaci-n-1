@@ -23,7 +23,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('grupo_id')->constrained('grupos')->onDelete('cascade')->comment('Relación con grupos');
             $table->foreignId('aula_id')->constrained('aulas')->onDelete('restrict')->comment('Relación con aulas');
-            $table->enum('dia_semana', ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'])->comment('Día de la semana');
+            $table->tinyInteger('dia_semana')->comment('Día de la semana (1=Lunes, 2=Martes, ..., 7=Domingo)');
             $table->time('hora_inicio')->comment('Hora de inicio de la clase');
             $table->time('hora_fin')->comment('Hora de fin de la clase');
             $table->timestamps();

@@ -11,24 +11,11 @@ class PwaSubscription extends Model
 
     protected $table = 'pwa_subscriptions';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'usuario_id',
+        'user_id',
         'endpoint',
         'public_key',
         'auth_token',
-        'user_agent',
+        'content_encoding',
     ];
-
-    /**
-     * Relación: Una suscripción pertenece a un usuario
-     */
-    public function usuario()
-    {
-        return $this->belongsTo(User::class, 'usuario_id');
-    }
 }

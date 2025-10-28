@@ -68,7 +68,12 @@ export default function Index({ auth, grupos }) {
                                                 <tr key={grupo.id}>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="text-sm font-medium text-gray-900">
-                                                            {grupo.nombre_grupo}
+                                                            <Link
+                                                                href={route('grupos.show', grupo.id)}
+                                                                className="text-indigo-600 hover:text-indigo-900 hover:underline"
+                                                            >
+                                                                {grupo.nombre_grupo}
+                                                            </Link>
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">

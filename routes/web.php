@@ -6,6 +6,7 @@ use App\Http\Controllers\AulaController;
 use App\Http\Controllers\DocenteController;
 use App\Http\Controllers\GestionAcademicaController;
 use App\Http\Controllers\GrupoController;
+use App\Http\Controllers\HorarioController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -34,6 +35,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('aulas', AulaController::class);
         Route::resource('gestiones', GestionAcademicaController::class);
         Route::resource('grupos', GrupoController::class);
+        
+        // Rutas de Horarios (asignación y eliminación)
+        Route::resource('horarios', HorarioController::class)->only(['store', 'destroy']);
     });
 
     // Rutas de Docentes (Solo Admin)

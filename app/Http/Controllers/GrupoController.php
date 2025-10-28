@@ -50,7 +50,6 @@ class GrupoController extends Controller
             });
 
         $gestiones = GestionAcademica::select('id', 'nombre')
-            ->where('activa', true)
             ->orderBy('fecha_inicio', 'desc')
             ->get();
 
@@ -77,7 +76,32 @@ class GrupoController extends Controller
      */
     public function show(Grupo $grupo)
     {
-        //
+        // Cargar las relaciones del grupo
+        $grupo->load([
+            'materia:id,nombre,codigo',
+            'docente.usuario:id,name',
+            'gestionAcademica:id,nombre'
+        ]);
+
+        // Obtener los horarios ya asignados a este grupo
+        $horarios = $grupo->horarios()
+            ->with('aula:id,nombre,edificio')
+            ->orderBy('dia_semana')
+            ->orderBy('hora_inicio')
+            ->get();
+
+        // Obtener todas las aulas disponibles para el formulario
+        $aulas = \App\Models\Aula::select('id', 'nombre', 'edificio', 'capacidad')
+            ->where('activo', true)
+            ->orderBy('edificio')
+            ->orderBy('nombre')
+            ->get();
+
+        return Inertia::render('Grupos/Show', [
+            'grupo' => $grupo,
+            'horarios' => $horarios,
+            'aulas' => $aulas,
+        ]);
     }
 
     /**
