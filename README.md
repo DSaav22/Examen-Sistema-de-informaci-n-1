@@ -1,256 +1,510 @@
-# 🎓 Sistema Web para la Asignación de Horarios, Aulas, Materias y Asistencia Docente
+# 🎓 Sistema de Asignación de Horarios# 🎓 Sistema Web para la Asignación de Horarios, Aulas, Materias y Asistencia Docente
 
-## 📌 Sprint 1 - Avance 50%
 
-Sistema de gestión universitaria construido con **Laravel 11**, **React**, **Inertia.js** y **PostgreSQL**.
 
----
+**Monorepo** con Backend Laravel (API REST) y Frontend React (SPA)## 📌 Sprint 1 - Avance 50%
 
-## 🚀 Características Implementadas (Sprint 1)
 
-### ✅ Autenticación y Autorización (RBAC)
-- Sistema de autenticación completo con Laravel Breeze
-- 3 roles de usuario: `administrador`, `coordinador`, `docente`
-- Middleware personalizado para control de acceso basado en roles
-- Usuarios de prueba pre-configurados
 
-### ✅ Gestión de Materias
-- CRUD completo con validación
-- Relación con carreras y facultades
-- Paginación y búsqueda
-- Auditoría de cambios
+## 📁 Estructura del ProyectoSistema de gestión universitaria construido con **Laravel 11**, **React**, **Inertia.js** y **PostgreSQL**.
 
-### ✅ Gestión de Aulas
-- CRUD completo
-- Tipos: Aula Normal, Laboratorio, Auditorio, Taller
-- Control de capacidad y recursos
-- Auditoría de cambios
 
-### ✅ Gestión de Docentes
-- CRUD completo
+
+```---
+
+Examen-Sistema-de-informaci-n-1/
+
+├── backend/                    # Backend Laravel (API REST)## 🚀 Características Implementadas (Sprint 1)
+
+│   ├── app/                   # Modelos, Controladores API, Middleware
+
+│   ├── config/                # Configuración (CORS, Sanctum, etc.)### ✅ Autenticación y Autorización (RBAC)
+
+│   ├── database/              # Migraciones y Seeders- Sistema de autenticación completo con Laravel Breeze
+
+│   ├── routes/api.php         # Rutas API- 3 roles de usuario: `administrador`, `coordinador`, `docente`
+
+│   ├── .env                   # Configuración de entorno- Middleware personalizado para control de acceso basado en roles
+
+│   └── composer.json          # Dependencias PHP- Usuarios de prueba pre-configurados
+
+│
+
+├── frontend-horarios/          # Frontend React (SPA)### ✅ Gestión de Materias
+
+│   ├── src/                   # Código fuente React- CRUD completo con validación
+
+│   │   ├── components/       # Componentes reutilizables- Relación con carreras y facultades
+
+│   │   ├── contexts/         # Context API (Auth)- Paginación y búsqueda
+
+│   │   ├── pages/            # Páginas de la aplicación- Auditoría de cambios
+
+│   │   └── services/         # Servicios API (Axios)
+
+│   ├── package.json          # Dependencias Node### ✅ Gestión de Aulas
+
+│   └── vite.config.js        # Configuración Vite- CRUD completo
+
+│- Tipos: Aula Normal, Laboratorio, Auditorio, Taller
+
+├── .git/- Control de capacidad y recursos
+
+├── .gitignore- Auditoría de cambios
+
+├── README.md                   # Este archivo
+
+└── REFACTORIZACION-GUIA.md    # Guía técnica completa### ✅ Gestión de Docentes
+
+```- CRUD completo
+
 - Vinculación con usuarios
-- Grados académicos y tipos de contrato
-- Especialidades y fechas de contratación
-- Auditoría de cambios
 
-### ✅ Base de Datos Avanzada
+---- Grados académicos y tipos de contrato
+
+- Especialidades y fechas de contratación
+
+## 🚀 Inicio Rápido- Auditoría de cambios
+
+
+
+### Requisitos Previos### ✅ Base de Datos Avanzada
+
 - 14 tablas completamente normalizadas
-- Restricciones `EXCLUDE USING GIST` en PostgreSQL para evitar conflictos de horarios
-- Relaciones optimizadas con foreign keys
-- Auditoría automática con `laravel-auditing`
+
+- **PHP** 8.3+- Restricciones `EXCLUDE USING GIST` en PostgreSQL para evitar conflictos de horarios
+
+- **Composer** 2.x- Relaciones optimizadas con foreign keys
+
+- **Node.js** 18+ y npm- Auditoría automática con `laravel-auditing`
+
+- **PostgreSQL** 15+
 
 ---
+
+### 1️⃣ Backend (Laravel API)
 
 ## 🏗️ Arquitectura del Sistema
 
-```
-├── Backend (Laravel 11)
+```bash
+
+# Navegar a la carpeta backend```
+
+cd backend├── Backend (Laravel 11)
+
 │   ├── Modelos Eloquent (14 modelos con relaciones)
-│   ├── Controladores Inertia (MateriaController, AulaController, DocenteController)
-│   ├── Form Requests (Validaciones personalizadas)
+
+# Instalar dependencias│   ├── Controladores Inertia (MateriaController, AulaController, DocenteController)
+
+composer install│   ├── Form Requests (Validaciones personalizadas)
+
 │   ├── Middleware (CheckRole para RBAC)
-│   └── Migraciones (PostgreSQL con restricciones avanzadas)
-│
-├── Frontend (React + Inertia.js)
+
+# Configurar archivo .env│   └── Migraciones (PostgreSQL con restricciones avanzadas)
+
+copy .env.example .env│
+
+# Editar .env con tus credenciales de base de datos PostgreSQL├── Frontend (React + Inertia.js)
+
 │   ├── Componentes de Materias (Index, Create, Edit)
-│   ├── Componentes de Aulas (Index, Create, Edit)
-│   ├── Componentes de Docentes (Index, Create, Edit)
+
+# Generar clave de aplicación│   ├── Componentes de Aulas (Index, Create, Edit)
+
+php artisan key:generate│   ├── Componentes de Docentes (Index, Create, Edit)
+
 │   └── Layout autenticado con navegación basada en roles
-│
-└── Base de Datos (PostgreSQL)
+
+# Ejecutar migraciones y seeders│
+
+php artisan migrate:fresh --seed└── Base de Datos (PostgreSQL)
+
     ├── Restricciones GIST para horarios sin conflictos
-    ├── Auditoría automática de cambios
-    └── Índices optimizados
-```
+
+# Iniciar servidor Laravel    ├── Auditoría automática de cambios
+
+php artisan serve    └── Índices optimizados
+
+``````
+
+**Backend corriendo en:** `http://localhost:8000`
 
 ---
+
+### 2️⃣ Frontend (React SPA)
 
 ## 📦 Tecnologías Utilizadas
 
-| Categoría | Tecnología | Versión |
-|-----------|-----------|---------|
+```bash
+
+# Navegar a la carpeta frontend| Categoría | Tecnología | Versión |
+
+cd frontend-horarios|-----------|-----------|---------|
+
 | Backend | Laravel | 11.x |
-| Frontend | React | 18.x |
-| Bridge | Inertia.js | 1.x |
+
+# Instalar dependencias| Frontend | React | 18.x |
+
+npm install| Bridge | Inertia.js | 1.x |
+
 | Base de Datos | PostgreSQL | 14+ |
-| Autenticación | Laravel Breeze | 2.x |
-| Auditoría | laravel-auditing | 13.x |
-| CSS | Tailwind CSS | 3.x |
-| Build Tool | Vite | 5.x |
 
----
+# Iniciar servidor de desarrollo| Autenticación | Laravel Breeze | 2.x |
 
-## ⚙️ Instalación
+npm run dev| Auditoría | laravel-auditing | 13.x |
 
-### 1. Clonar el Repositorio
+```| CSS | Tailwind CSS | 3.x |
+
+**Frontend corriendo en:** `http://localhost:5173`| Build Tool | Vite | 5.x |
+
+
+
+------
+
+
+
+## 🔐 Credenciales de Prueba## ⚙️ Instalación
+
+
+
+| Rol            | Email                         | Contraseña      |### 1. Clonar el Repositorio
+
+|----------------|-------------------------------|-----------------|```powershell
+
+| Administrador  | admin@admin.com               | Admin123.       |git clone https://github.com/DSaav22/Examen-Sistema-de-informaci-n-1.git
+
+| Coordinador    | coordinador@coordinador.com   | Coordinador123. |cd Examen-Sistema-de-informaci-n-1
+
+| Docente        | docente@docente.com           | Docente123.     |```
+
+
+
+---### 2. Instalar Dependencias PHP
+
 ```powershell
-git clone https://github.com/DSaav22/Examen-Sistema-de-informaci-n-1.git
-cd Examen-Sistema-de-informaci-n-1
+
+## 📚 Documentacióncomposer install
+
 ```
 
-### 2. Instalar Dependencias PHP
-```powershell
-composer install
-```
+- **[REFACTORIZACION-GUIA.md](REFACTORIZACION-GUIA.md)** - Guía completa de arquitectura API + SPA
 
-### 3. Configurar Variables de Entorno
+- **[backend/GUIA_DESPLIEGUE.md](backend/GUIA_DESPLIEGUE.md)** - Despliegue en Google Cloud Platform### 3. Configurar Variables de Entorno
+
 ```powershell
-cp .env.example .env
+
+---cp .env.example .env
+
 php artisan key:generate
-```
 
-Edita el archivo `.env` con tu configuración de PostgreSQL:
-```env
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
+## 🛠️ Stack Tecnológico```
+
+
+
+### Backend (API REST)Edita el archivo `.env` con tu configuración de PostgreSQL:
+
+- Laravel 11.x```env
+
+- PostgreSQL 15DB_CONNECTION=pgsql
+
+- Laravel Sanctum (autenticación con tokens)DB_HOST=127.0.0.1
+
+- PHP 8.3DB_PORT=5432
+
 DB_DATABASE=sistema_horarios
-DB_USERNAME=tu_usuario
-DB_PASSWORD=tu_contraseña
-```
 
-### 4. Instalar Laravel Breeze y Dependencias
-```powershell
+### Frontend (SPA)DB_USERNAME=tu_usuario
+
+- React 18.xDB_PASSWORD=tu_contraseña
+
+- Vite 5.x```
+
+- React Router v6
+
+- Axios (cliente HTTP)### 4. Instalar Laravel Breeze y Dependencias
+
+- Tailwind CSS```powershell
+
 composer require laravel/breeze --dev
-php artisan breeze:install react
+
+---php artisan breeze:install react
+
 npm install
+
+## 📦 API Endpoints```
+
+
+
+**Base URL:** `http://localhost:8000/api`### 5. Instalar Laravel Auditing
+
+```powershell
+
+### 🔓 Autenticación (Públicas)composer require owen-it/laravel-auditing
+
+- `POST /login` - Iniciar sesiónphp artisan vendor:publish --provider="OwenIt\Auditing\AuditingServiceProvider" --tag="config"
+
+- `POST /register` - Registrar usuariophp artisan vendor:publish --provider="OwenIt\Auditing\AuditingServiceProvider" --tag="migrations"
+
 ```
 
-### 5. Instalar Laravel Auditing
-```powershell
-composer require owen-it/laravel-auditing
-php artisan vendor:publish --provider="OwenIt\Auditing\AuditingServiceProvider" --tag="config"
-php artisan vendor:publish --provider="OwenIt\Auditing\AuditingServiceProvider" --tag="migrations"
-```
+### 🔒 Rutas Protegidas (requieren token)
 
 ### 6. Ejecutar Migraciones y Seeders
-```powershell
-php artisan migrate
-php artisan db:seed
+
+#### Autenticación```powershell
+
+- `POST /logout` - Cerrar sesiónphp artisan migrate
+
+- `GET /user` - Obtener usuario autenticadophp artisan db:seed
+
 ```
 
-### 7. Compilar Assets
+#### Recursos CRUD
+
+- `/materias` - Gestión de materias### 7. Compilar Assets
+
+- `/aulas` - Gestión de aulas```powershell
+
+- `/docentes` - Gestión de docentesnpm run dev
+
+- `/gestiones` - Gestión académica (semestres)```
+
+- `/grupos` - Gestión de grupos
+
+- `/horarios` - Gestión de horarios (con detección de conflictos)### 8. Iniciar el Servidor
+
 ```powershell
-npm run dev
-```
 
-### 8. Iniciar el Servidor
-```powershell
-php artisan serve
-```
+**Métodos disponibles:**php artisan serve
 
-Visita: **http://localhost:8000**
+- `GET /recurso` - Listar (paginado)```
 
----
+- `POST /recurso` - Crear
 
-## 👥 Usuarios de Prueba
+- `GET /recurso/{id}` - Ver detalleVisita: **http://localhost:8000**
 
-| Email | Password | Rol |
-|-------|----------|-----|
-| admin@sistema.com | password | Administrador |
+- `PUT/PATCH /recurso/{id}` - Actualizar
+
+- `DELETE /recurso/{id}` - Eliminar---
+
+
+
+**Datos de formulario:**## 👥 Usuarios de Prueba
+
+- `GET /materias-form-data` - Carreras disponibles
+
+- `GET /docentes-form-data` - Usuarios disponibles| Email | Password | Rol |
+
+- `GET /grupos-form-data` - Materias, docentes, gestiones|-------|----------|-----|
+
+- `GET /horarios-form-data` - Aulas disponibles| admin@sistema.com | password | Administrador |
+
 | coordinador@sistema.com | password | Coordinador |
-| docente@sistema.com | password | Docente |
 
----
+---| docente@sistema.com | password | Docente |
 
-## 📂 Estructura del Proyecto
 
-```
-app/
+
+## 🎯 Funcionalidades Principales---
+
+
+
+### ✅ Gestión de Materias## 📂 Estructura del Proyecto
+
+- CRUD completo
+
+- Filtrado por carrera y facultad```
+
+- Estado activo/inactivoapp/
+
 ├── Http/
-│   ├── Controllers/
-│   │   ├── MateriaController.php
-│   │   ├── AulaController.php
-│   │   └── DocenteController.php
+
+### ✅ Gestión de Aulas│   ├── Controllers/
+
+- CRUD completo│   │   ├── MateriaController.php
+
+- Capacidad, edificio, piso│   │   ├── AulaController.php
+
+- Disponibilidad en tiempo real│   │   └── DocenteController.php
+
 │   ├── Middleware/
-│   │   └── CheckRole.php
-│   └── Requests/
-│       ├── StoreMateriaRequest.php
-│       ├── UpdateMateriaRequest.php
+
+### ✅ Gestión de Docentes│   │   └── CheckRole.php
+
+- Vinculación con usuarios│   └── Requests/
+
+- Código de docente│       ├── StoreMateriaRequest.php
+
+- Grado académico y especialidad│       ├── UpdateMateriaRequest.php
+
 │       ├── StoreAulaRequest.php
-│       ├── UpdateAulaRequest.php
-│       ├── StoreDocenteRequest.php
-│       └── UpdateDocenteRequest.php
-├── Models/
+
+### ✅ Gestión Académica│       ├── UpdateAulaRequest.php
+
+- Periodos (I, II)│       ├── StoreDocenteRequest.php
+
+- Fechas de inicio/fin│       └── UpdateDocenteRequest.php
+
+- Derivación automática de año y periodo├── Models/
+
 │   ├── Role.php
-│   ├── User.php
-│   ├── Facultad.php
-│   ├── Carrera.php
-│   ├── Materia.php (con Auditable)
+
+### ✅ Gestión de Grupos│   ├── User.php
+
+- Asignación materia-docente-gestión│   ├── Facultad.php
+
+- Número de grupo│   ├── Carrera.php
+
+- Capacidad máxima│   ├── Materia.php (con Auditable)
+
 │   ├── Docente.php (con Auditable)
-│   ├── Aula.php (con Auditable)
-│   ├── GestionAcademica.php
-│   ├── Grupo.php (con Auditable)
-│   ├── Horario.php (con Auditable)
-│   ├── Asistencia.php
+
+### ✅ Gestión de Horarios ⭐│   ├── Aula.php (con Auditable)
+
+- **Detección de conflictos de aula** (PostgreSQL GIST constraints)│   ├── GestionAcademica.php
+
+- **Detección de conflictos de docente** (validación Laravel)│   ├── Grupo.php (con Auditable)
+
+- Días de semana (1-7)│   ├── Horario.php (con Auditable)
+
+- Hora inicio y fin│   ├── Asistencia.php
+
 │   ├── TokenAsistenciaQr.php
-│   ├── PwaSubscription.php
+
+---│   ├── PwaSubscription.php
+
 │   └── NotificacionLog.php
-database/
+
+## 🔒 Seguridaddatabase/
+
 ├── migrations/
-│   ├── 2025_10_24_000001_create_roles_table.php
-│   ├── 2025_10_24_000002_create_users_table.php
-│   ├── ...
-│   └── 2025_10_24_000014_create_notificaciones_log_table.php
-└── seeders/
+
+- **Autenticación:** Laravel Sanctum con tokens JWT│   ├── 2025_10_24_000001_create_roles_table.php
+
+- **Autorización:** Middleware basado en roles (admin, coordinador, docente)│   ├── 2025_10_24_000002_create_users_table.php
+
+- **CORS:** Configurado para `localhost:5173`│   ├── ...
+
+- **Validación:** Form Requests en todos los endpoints│   └── 2025_10_24_000014_create_notificaciones_log_table.php
+
+- **SQL Injection:** Protección con Eloquent ORM└── seeders/
+
     ├── RolesSeeder.php
-    └── DatabaseSeeder.php
+
+---    └── DatabaseSeeder.php
+
 resources/
-└── js/
+
+## 📊 Base de Datos└── js/
+
     └── Pages/
-        ├── Materias/
-        │   ├── Index.jsx
-        │   ├── Create.jsx
-        │   └── Edit.jsx
-        ├── Aulas/
-        │   ├── Index.jsx
-        │   ├── Create.jsx
-        │   └── Edit.jsx
-        └── Docentes/
-            ├── Index.jsx
-            ├── Create.jsx
-            └── Edit.jsx
+
+### Tablas Principales        ├── Materias/
+
+- `users` - Usuarios del sistema        │   ├── Index.jsx
+
+- `roles` - Roles (administrador, coordinador, docente)        │   ├── Create.jsx
+
+- `facultades` - Facultades        │   └── Edit.jsx
+
+- `carreras` - Carreras académicas        ├── Aulas/
+
+- `materias` - Materias/asignaturas        │   ├── Index.jsx
+
+- `docentes` - Información de docentes        │   ├── Create.jsx
+
+- `aulas` - Aulas/salones        │   └── Edit.jsx
+
+- `gestiones_academicas` - Periodos académicos        └── Docentes/
+
+- `grupos` - Grupos de materia            ├── Index.jsx
+
+- `horarios` - Asignación de horarios            ├── Create.jsx
+
+- `asistencias` - Control de asistencia (futuro)            └── Edit.jsx
+
 routes/
-└── web.php (Rutas protegidas con middleware)
-```
 
----
+### Características Avanzadas└── web.php (Rutas protegidas con middleware)
 
-## 🔐 Sistema de Roles y Permisos
+- **GIST Exclusion Constraints** en PostgreSQL para evitar conflictos de aula```
 
-### Administrador
+- **Función IMMUTABLE** `time_to_interval()` para comparaciones de tiempo
+
+- **Auditoría** con `laravel-auditing`---
+
+
+
+---## 🔐 Sistema de Roles y Permisos
+
+
+
+## 🚀 Despliegue### Administrador
+
 - ✅ Acceso completo al sistema
-- ✅ Gestión de usuarios y roles
-- ✅ Gestión de materias, aulas y docentes
+
+### Desarrollo Local- ✅ Gestión de usuarios y roles
+
+Ver sección [Inicio Rápido](#-inicio-rápido)- ✅ Gestión de materias, aulas y docentes
+
 - ✅ Acceso a auditoría y reportes
 
-### Coordinador
-- ✅ Gestión de horarios y grupos
+### Producción (Google Cloud Platform)
+
+1. **Backend:** Cloud Run + Cloud SQL (PostgreSQL)### Coordinador
+
+2. **Frontend:** Cloud Run (contenedor Nginx estático)- ✅ Gestión de horarios y grupos
+
 - ✅ Asignación de docentes a materias
-- ✅ Gestión de aulas y materias
+
+Ver guía completa en: `backend/GUIA_DESPLIEGUE.md`- ✅ Gestión de aulas y materias
+
 - ❌ No puede gestionar usuarios ni configuraciones del sistema
 
+---
+
 ### Docente
-- ✅ Ver sus horarios asignados
+
+## 🤝 Contribución- ✅ Ver sus horarios asignados
+
 - ✅ Registrar asistencia de sus clases
-- ✅ Generar códigos QR para asistencia
+
+Este es un proyecto académico para el examen de **Sistemas de Información 1**.- ✅ Generar códigos QR para asistencia
+
 - ❌ No puede modificar horarios ni gestionar materias
 
----
+**Autor:** Diego  
+
+**Universidad:** [Tu Universidad]  ---
+
+**Fecha:** Octubre 2025
 
 ## 🔧 Configuración Adicional
 
+---
+
 ### Registrar el Middleware CheckRole
+
+## 📝 Licencia
 
 Edita `bootstrap/app.php`:
 
+Proyecto académico - Todos los derechos reservados
+
 ```php
-->withMiddleware(function (Middleware $middleware) {
+
+---->withMiddleware(function (Middleware $middleware) {
+
     $middleware->alias([
-        'role' => \App\Http\Middleware\CheckRole::class,
+
+## 📞 Soporte        'role' => \App\Http\Middleware\CheckRole::class,
+
     ]);
-})
-```
+
+Para preguntas o problemas, consulta la documentación técnica en:})
+
+- [REFACTORIZACION-GUIA.md](REFACTORIZACION-GUIA.md)```
+
+- [backend/README-OLD.md](backend/README-OLD.md) (documentación original)
 
 ### Compartir datos de rol en Inertia
 
