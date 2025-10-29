@@ -1,0 +1,53 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Node modules
+node_modules/
+
+# Storage files
+storage/app/*
+!storage/app/.gitignore
+!storage/app/public/
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+tests/
+.phpunit.result.cache
+phpunit.xml
+
+# Documentation
+README.md
+docs/
+
+# Vendor (será instalado en el build)
+vendor/
+
+# Cache
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Build artifacts
+public/hot
+public/storage
+public/build

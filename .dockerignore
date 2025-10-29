@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules
+vendor
+
+# Build
+public/hot
+public/storage
+storage/*.key
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Logs
+*.log
+storage/logs/*
+
+# Documentation
+README.md
+INSTALACION.md
+GUIA_DESPLIEGUE.md
+RESUMEN_LIMPIEZA.md
+SISTEMA_HORARIOS_COMPLETADO.md
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
