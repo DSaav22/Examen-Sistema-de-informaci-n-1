@@ -115,13 +115,13 @@ function AsignarHorarios() {
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-gray-500">👨‍🏫 Docente:</span>
                       <span className="text-gray-700 font-medium">
-                        {grupo.docente?.usuario?.nombre || 'Sin docente'} {grupo.docente?.usuario?.apellido || ''}
+                        {grupo.docente?.usuario?.name || 'Sin docente'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-gray-500">📅 Gestión:</span>
                       <span className="text-gray-700 font-medium">
-                        {grupo.gestion?.periodo || 'Sin gestión'}
+                        {grupo.gestionAcademica?.nombre || 'Sin gestión'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">

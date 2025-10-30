@@ -26,10 +26,13 @@ const Edit = () => {
   const loadData = async () => {
     try {
       setLoadingForm(true);
-      const [grupoData, formDataResponse] = await Promise.all([
+      const [grupoResponse, formDataResponse] = await Promise.all([
         grupoService.getGrupoById(id),
         grupoService.getFormData()
       ]);
+
+      // Extraer el grupo de la respuesta (backend devuelve { data: {...} })
+      const grupoData = grupoResponse.data || grupoResponse;
 
       setFormData({
         materia_id: grupoData.materia_id ? grupoData.materia_id.toString() : '',

@@ -17,7 +17,14 @@ const HorarioGlobal = () => {
     docente_id: '',
   });
 
-  const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const dias = [
+    { nombre: 'Lunes', numero: 1 },
+    { nombre: 'Martes', numero: 2 },
+    { nombre: 'Miércoles', numero: 3 },
+    { nombre: 'Jueves', numero: 4 },
+    { nombre: 'Viernes', numero: 5 },
+    { nombre: 'Sábado', numero: 6 }
+  ];
   const horas = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
 
   useEffect(() => {
@@ -32,16 +39,37 @@ const HorarioGlobal = () => {
       setAulas(data.aulas || []);
       setDocentes(data.docentes || []);
       
-      // Seleccionar automáticamente la gestión activa
+      // Seleccionar automáticamente la gestión activa y cargar horarios
       const gestionActiva = data.gestiones?.find(g => g.activo);
       if (gestionActiva) {
         setFiltros(prev => ({ ...prev, gestion_id: gestionActiva.id }));
+        // Cargar horarios automáticamente con la gestión activa
+        await loadHorarios(gestionActiva.id);
       }
     } catch (error) {
       console.error('Error al cargar filtros:', error);
       setErrors({ form: 'Error al cargar los filtros' });
     } finally {
       setLoadingFiltros(false);
+    }
+  };
+
+  const loadHorarios = async (gestionId, aulaId = '', docenteId = '') => {
+    try {
+      setLoading(true);
+      const params = {
+        gestion_id: gestionId,
+        ...(aulaId && { aula_id: aulaId }),
+        ...(docenteId && { docente_id: docenteId })
+      };
+      const data = await reporteService.getHorariosGlobal(params);
+      console.log('Horarios cargados:', data.horarios); // Debug
+      setHorarios(data.horarios || []);
+    } catch (error) {
+      console.error('Error al cargar horarios:', error);
+      setErrors({ submit: error.response?.data?.message || 'Error al cargar los horarios' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,23 +87,14 @@ const HorarioGlobal = () => {
       return;
     }
 
-    try {
-      setLoading(true);
-      setErrors({});
-      const data = await reporteService.getHorariosGlobal(filtros);
-      setHorarios(data.horarios || []);
-    } catch (error) {
-      console.error('Error al cargar horarios:', error);
-      setErrors({ submit: error.response?.data?.message || 'Error al cargar los horarios' });
-    } finally {
-      setLoading(false);
-    }
+    setErrors({});
+    await loadHorarios(filtros.gestion_id, filtros.aula_id, filtros.docente_id);
   };
 
-  const getHorarioEnCelda = (dia, hora) => {
+  const getHorarioEnCelda = (diaNumero, hora) => {
     return horarios.filter(h => {
       const horaInicio = h.hora_inicio.substring(0, 5);
-      return h.dia_semana === dia && horaInicio === hora;
+      return h.dia_semana === diaNumero && horaInicio === hora;
     });
   };
 
@@ -226,10 +245,10 @@ const HorarioGlobal = () => {
                   </th>
                   {dias.map((dia) => (
                     <th
-                      key={dia}
+                      key={dia.nombre}
                       className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200"
                     >
-                      {dia}
+                      {dia.nombre}
                     </th>
                   ))}
                 </tr>
@@ -241,10 +260,10 @@ const HorarioGlobal = () => {
                       {hora}
                     </td>
                     {dias.map((dia) => {
-                      const horariosEnCelda = getHorarioEnCelda(dia, hora);
+                      const horariosEnCelda = getHorarioEnCelda(dia.numero, hora);
                       return (
                         <td
-                          key={`${dia}-${hora}`}
+                          key={`${dia.nombre}-${hora}`}
                           className="px-2 py-2 text-sm border-r border-gray-200 align-top"
                           style={{ minWidth: '150px' }}
                         >

@@ -12,21 +12,25 @@ use App\Models\Aula;
 use App\Http\Requests\StoreGrupoRequest;
 use App\Http\Requests\UpdateGrupoRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GrupoController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * CRÍTICO: Cargar Docente y Gestión Académica para la vista de tarjetas
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $grupos = Grupo::with([
-            'materia.carrera',
-            'docente.usuario',
-            'gestionAcademica',
+            'materia',
+            'docente.usuario', // Nombre del Docente
+            'gestionAcademica', // Nombre de la Gestión
+            'horarios', // Conteo de Horarios
         ])
         ->orderBy('nombre_grupo')
-        ->paginate(10);
+        ->paginate($request->get('per_page', 10));
 
         return response()->json($grupos, 200);
     }
@@ -82,19 +86,32 @@ class GrupoController extends Controller
 
     /**
      * Display the specified resource.
+     * Responde a: GET /api/grupos/{grupo}
      */
     public function show(Grupo $grupo): JsonResponse
     {
-        $grupo->load([
-            'materia.carrera.facultad',
-            'docente.usuario',
-            'gestionAcademica',
-            'horarios.aula',
-        ]);
+        try {
+            // Cargar todas las relaciones necesarias para la página Grupos/Show.jsx
+            $grupo->load([
+                'materia.carrera',        // Para la tarjeta "Materia"
+                'docente.usuario',        // Para la tarjeta "Docente"
+                'gestionAcademica',       // Para la tarjeta "Gestión"
+                'horarios',               // Para la tabla "Horarios Asignados"
+                'horarios.aula'           // Para ver el nombre del aula en la tabla
+            ]);
 
-        return response()->json([
-            'grupo' => $grupo,
-        ], 200);
+            // Devolver directamente con clave 'data' para consistencia con el frontend
+            return response()->json([
+                'data' => $grupo
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error("Error al cargar grupo {$grupo->id}: " . $e->getMessage());
+            return response()->json([
+                'message' => 'Error al cargar los detalles del grupo.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

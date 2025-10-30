@@ -29,10 +29,13 @@ const Edit = () => {
   const loadData = async () => {
     try {
       setLoadingForm(true);
-      const [docenteData, formDataResponse] = await Promise.all([
+      const [docenteResponse, formDataResponse] = await Promise.all([
         docenteService.getDocenteById(id),
         docenteService.getFormData()
       ]);
+
+      // Extraer el docente de la respuesta (backend devuelve { docente: {...} })
+      const docenteData = docenteResponse.docente || docenteResponse;
 
       // Formatear fecha a YYYY-MM-DD si existe
       let fechaFormateada = '';

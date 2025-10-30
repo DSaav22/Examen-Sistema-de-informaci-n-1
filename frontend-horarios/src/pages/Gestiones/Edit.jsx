@@ -22,12 +22,22 @@ const Edit = () => {
   const loadData = async () => {
     try {
       setLoadingForm(true);
-      const data = await gestionService.getGestionById(id);
+      const response = await gestionService.getGestionById(id);
+      
+      // Extraer la gestión de la respuesta (backend devuelve { gestion: {...} })
+      const gestionData = response.gestion || response;
+
+      // Formatear fechas a YYYY-MM-DD
+      const formatearFecha = (fecha) => {
+        if (!fecha) return '';
+        const date = new Date(fecha);
+        return date.toISOString().split('T')[0];
+      };
 
       setFormData({
-        nombre: data.nombre || '',
-        fecha_inicio: data.fecha_inicio || '',
-        fecha_fin: data.fecha_fin || '',
+        nombre: gestionData.nombre || '',
+        fecha_inicio: formatearFecha(gestionData.fecha_inicio),
+        fecha_fin: formatearFecha(gestionData.fecha_fin),
       });
     } catch (error) {
       console.error('Error al cargar datos:', error);

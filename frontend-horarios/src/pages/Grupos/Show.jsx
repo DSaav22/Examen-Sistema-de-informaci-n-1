@@ -51,7 +51,9 @@ function GruposShow() {
                     throw new Error('No se recibió información del grupo.');
                 }
 
-                const aulasData = formDataResponse.data.aulas || [];
+                // Acceder directamente a las propiedades de formDataResponse
+                // formDataResponse ya contiene { aulas: [...], materias: [...], etc }
+                const aulasData = formDataResponse.aulas || [];
                 setAulas(aulasData);
                 if (aulasData.length > 0) {
                     setNewHorarioData(prev => ({ ...prev, aula_id: aulasData[0].id.toString() }));
@@ -105,8 +107,12 @@ function GruposShow() {
 
         try {
             const response = await grupoService.assignHorario(grupoId, newHorarioData);
-            setHorariosAsignados(prev => [...prev, response.data.horario]);
-            setSuccess(response.data.message || 'Horario asignado con éxito.');
+            
+            // response ya contiene el objeto { message: '...', horario: {...} }
+            // porque grupoService.assignHorario devuelve response.data
+            setHorariosAsignados(prev => [...prev, response.horario]);
+            setSuccess(response?.message || 'Horario asignado con éxito.');
+            
             setNewHorarioData({
                 dia_semana: '1',
                 aula_id: aulas.length > 0 ? aulas[0].id.toString() : '',
