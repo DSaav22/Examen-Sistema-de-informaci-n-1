@@ -16,7 +16,7 @@ const Edit = () => {
     nivel: '',
     creditos: '',
     horas_semanales: '',
-    carrera_id: '',
+    carreras: [], // Cambiado de carrera_id a carreras (array)
   });
 
   useEffect(() => {
@@ -34,13 +34,20 @@ const Edit = () => {
       const materiaResponse = await materiaService.getMateriaById(id);
       const materia = materiaResponse.materia || materiaResponse;
       
+      // Mapear carreras asociadas a formato del formulario
+      const carrerasData = (materia.carreras || []).map((carrera) => ({
+        carrera_id: carrera.id,
+        semestre_sugerido: carrera.pivot?.semestre_sugerido || null,
+        obligatoria: carrera.pivot?.obligatoria ?? true,
+      }));
+
       setFormData({
         sigla: materia.sigla || '',
         nombre: materia.nombre || '',
         nivel: materia.nivel || '',
         creditos: materia.creditos || '',
         horas_semanales: materia.horas_semanales || '',
-        carrera_id: materia.carrera_id || '',
+        carreras: carrerasData,
       });
     } catch (error) {
       console.error('Error al cargar datos:', error);
@@ -60,6 +67,39 @@ const Edit = () => {
     // Limpiar error del campo cuando el usuario empiece a escribir
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  // Nueva función para manejar la selección de carreras (múltiple)
+  const handleCarreraToggle = (carreraId) => {
+    setFormData((prev) => {
+      const isSelected = prev.carreras.some((c) => c.carrera_id === carreraId);
+      
+      if (isSelected) {
+        // Desmarcar: eliminar de la lista
+        return {
+          ...prev,
+          carreras: prev.carreras.filter((c) => c.carrera_id !== carreraId),
+        };
+      } else {
+        // Marcar: agregar a la lista con datos por defecto
+        return {
+          ...prev,
+          carreras: [
+            ...prev.carreras,
+            {
+              carrera_id: carreraId,
+              semestre_sugerido: null,
+              obligatoria: true,
+            },
+          ],
+        };
+      }
+    });
+
+    // Limpiar error de carreras
+    if (errors.carreras) {
+      setErrors((prev) => ({ ...prev, carreras: null }));
     }
   };
 
@@ -300,37 +340,84 @@ const Edit = () => {
                 </div>
               </div>
 
-              {/* Carrera */}
+              {/* Carreras (Selección Múltiple) */}
               <div>
-                <label
-                  htmlFor="carrera_id"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  Carrera <span className="text-red-500">*</span>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Carreras Asociadas <span className="text-red-500">*</span>
                 </label>
-                <select
-                  name="carrera_id"
-                  id="carrera_id"
-                  required
-                  value={formData.carrera_id}
-                  onChange={handleChange}
-                  className={`block w-full border ${
-                    errors.carrera_id ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                  } rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all sm:text-sm`}
-                >
-                  <option value="">Seleccione una carrera</option>
-                  {carreras.map((carrera) => (
-                    <option key={carrera.id} value={carrera.id}>
-                      {carrera.nombre}
-                    </option>
-                  ))}
-                </select>
-                {errors.carrera_id && (
+                <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 space-y-2 max-h-64 overflow-y-auto">
+                  {carreras.length === 0 ? (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      No hay carreras disponibles
+                    </p>
+                  ) : (
+                    carreras.map((carrera) => {
+                      const isSelected = formData.carreras.some(
+                        (c) => c.carrera_id === carrera.id
+                      );
+                      return (
+                        <label
+                          key={carrera.id}
+                          className={`flex items-center p-3 rounded-md cursor-pointer transition-colors ${
+                            isSelected
+                              ? 'bg-blue-100 border-2 border-blue-400'
+                              : 'bg-white border border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleCarreraToggle(carrera.id)}
+                            className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="ml-3 text-sm font-medium text-gray-900">
+                            {carrera.nombre}
+                          </span>
+                          {carrera.facultad && (
+                            <span className="ml-auto text-xs text-gray-500">
+                              {carrera.facultad.nombre}
+                            </span>
+                          )}
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  Seleccione una o más carreras a las que pertenece esta materia
+                </p>
+                {formData.carreras.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {formData.carreras.map((carreraData) => {
+                      const carrera = carreras.find((c) => c.id === carreraData.carrera_id);
+                      return (
+                        <span
+                          key={carreraData.carrera_id}
+                          className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                          {carrera?.nombre}
+                          <button
+                            type="button"
+                            onClick={() => handleCarreraToggle(carreraData.carrera_id)}
+                            className="ml-2 text-blue-600 hover:text-blue-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+                {errors.carreras && (
                   <p className="mt-2 text-sm text-red-600 flex items-center">
                     <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
                     </svg>
-                    {errors.carrera_id[0]}
+                    {errors.carreras[0]}
                   </p>
                 )}
               </div>

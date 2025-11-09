@@ -105,8 +105,24 @@ function GruposShow() {
             return;
         }
 
+        // Verificar que el grupo tenga docente asignado
+        if (!grupo?.docente_id) {
+            setFormErrors({ general: 'El grupo debe tener un docente asignado para poder agregar horarios.' });
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
-            const response = await grupoService.assignHorario(grupoId, newHorarioData);
+            // Agregar docente_id al payload
+            const horarioDataWithDocente = {
+                ...newHorarioData,
+                docente_id: grupo.docente_id,
+                grupo_id: parseInt(grupoId, 10) // Agregar explícitamente el grupo_id
+            };
+            
+            console.log('Enviando horario con datos:', horarioDataWithDocente);
+            
+            const response = await grupoService.assignHorario(grupoId, horarioDataWithDocente);
             
             // response ya contiene el objeto { message: '...', horario: {...} }
             // porque grupoService.assignHorario devuelve response.data

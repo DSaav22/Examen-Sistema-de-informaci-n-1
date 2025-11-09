@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Horario;
 use App\Models\Grupo;
+use App\Models\Aula;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
@@ -62,33 +63,71 @@ class HorarioController extends Controller
             $nuevoInicio = $validatedData['hora_inicio'];
             $nuevoFin = $validatedData['hora_fin'];
             $grupoId = $validatedData['grupo_id'];
+            $aulaId = $validatedData['aula_id'];
             $diaSemanaInt = (int)$validatedData['dia_semana'];
 
-            // Validación Manual Conflicto Docente
+            // --- OBTENER DOCENTE_ID DESDE EL GRUPO ---
             $grupo = Grupo::find($grupoId);
-            if (!$grupo) {
-                return response()->json(['message' => 'Grupo no encontrado.'], 404);
+            if (!$grupo || !$grupo->docente_id) {
+                throw ValidationException::withMessages([
+                    'grupo_id' => 'El grupo no es válido o no tiene un docente asignado.'
+                ]);
             }
-            $docenteId = $grupo->docente_id;
+            $docente_id_validado = $grupo->docente_id;
+            // --- FIN LÓGICA ---
 
-            $conflictoDocente = Horario::where('dia_semana', $diaSemanaInt)
+            // 1. Validar Conflicto de AULA
+            $conflictoAula = Horario::where('aula_id', $aulaId)
+                ->where('dia_semana', $diaSemanaInt)
                 ->where(function ($query) use ($nuevoInicio, $nuevoFin) {
                     $query->where('hora_inicio', '<', $nuevoFin)
                           ->where('hora_fin', '>', $nuevoInicio);
                 })
-                ->whereHas('grupo', function ($query) use ($docenteId) {
-                    $query->where('docente_id', $docenteId);
+                ->exists();
+
+            if ($conflictoAula) {
+                throw ValidationException::withMessages([
+                    'aula_id' => '¡Conflicto de Aula! El aula seleccionada ya está ocupada en ese día y hora.'
+                ]);
+            }
+
+            // 2. Validar Conflicto de DOCENTE
+            $conflictoDocente = Horario::where('docente_id', $docente_id_validado)
+                ->where('dia_semana', $validatedData['dia_semana'])
+                ->where(function ($query) use ($validatedData) {
+                    $query->where('hora_inicio', '<', $validatedData['hora_fin'])
+                          ->where('hora_fin', '>', $validatedData['hora_inicio']);
                 })
                 ->exists();
 
             if ($conflictoDocente) {
                 throw ValidationException::withMessages([
-                    'general' => '¡Conflicto de Horario! El docente ya tiene otra clase asignada en ese día y rango de horas.'
+                    'docente_id' => '¡Conflicto de Docente! El docente ya tiene otra clase asignada en ese día y hora.'
                 ]);
             }
 
-            // Intento de Creación (Conflicto Aula - DB GIST)
-            $horario = Horario::create($validatedData);
+            // 3. Validar Conflicto de GRUPO
+            $conflictoGrupo = Horario::where('grupo_id', $grupoId)
+                ->where('dia_semana', $diaSemanaInt)
+                ->where(function ($query) use ($nuevoInicio, $nuevoFin) {
+                    $query->where('hora_inicio', '<', $nuevoFin)
+                          ->where('hora_fin', '>', $nuevoInicio);
+                })
+                ->exists();
+
+            if ($conflictoGrupo) {
+                throw ValidationException::withMessages([
+                    'grupo_id' => '¡Conflicto de Grupo! Este grupo ya tiene otra clase asignada en ese día y hora.'
+                ]);
+            }
+
+            // --- FIN DE VALIDACIÓN ANTI-CONFLICTOS ---
+
+            // Si pasa todas las validaciones, prepara los datos
+            $datosHorario = $validatedData;
+            $datosHorario['docente_id'] = $docente_id_validado; // <-- AÑADE EL DOCENTE_ID
+
+            $horario = Horario::create($datosHorario); // <-- GUARDA LOS DATOS PREPARADOS
             $horario->load('aula');
 
             return response()->json([
@@ -124,10 +163,15 @@ class HorarioController extends Controller
             ], 500);
 
         } catch (\Exception $e) {
+            // ***** CAPTURA DETALLADA DE ERRORES 500 *****
+            // Muestra el error real de PHP para debugging
             Log::error("Error inesperado en HorarioController@store: " . $e->getMessage());
             return response()->json([
-                'message' => 'Ocurrió un error inesperado.',
-                'errors' => ['general' => 'Error del servidor.']
+                'error' => 'Error 500 Interno. Causa Raíz:',
+                'message' => $e->getMessage(),     // El error real
+                'file' => $e->getFile(),           // El archivo que "crashó"
+                'line' => $e->getLine(),           // La línea exacta del "crash"
+                'trace' => $e->getTraceAsString()  // Stack trace completo
             ], 500);
         }
     }
@@ -138,7 +182,7 @@ class HorarioController extends Controller
     public function show(Horario $horario): JsonResponse
     {
         $horario->load([
-            'grupo.materia.carrera',
+            'grupo.materia.carreras',
             'grupo.docente.usuario',
             'grupo.gestionAcademica',
             'aula',

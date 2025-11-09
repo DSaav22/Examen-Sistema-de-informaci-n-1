@@ -193,10 +193,23 @@ const Index = () => {
                       <td className="px-6 py-4">
                         <div className="text-sm font-medium text-gray-900">{materia.nombre}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {materia.carrera?.nombre || 'Sin carrera'}
-                        </span>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-1">
+                          {materia.carreras && materia.carreras.length > 0 ? (
+                            materia.carreras.map((carrera) => (
+                              <span 
+                                key={carrera.id}
+                                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                              >
+                                {carrera.nombre}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                              Sin carreras
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <Link

@@ -8,6 +8,7 @@ use App\Models\Carrera;
 use App\Http\Requests\StoreMateriaRequest;
 use App\Http\Requests\UpdateMateriaRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class MateriaController extends Controller
 {
@@ -16,7 +17,7 @@ class MateriaController extends Controller
      */
     public function index(): JsonResponse
     {
-        $materias = Materia::with(['carrera.facultad'])
+        $materias = Materia::with(['carreras.facultad'])
             ->orderBy('nombre')
             ->paginate(10);
 
@@ -43,8 +44,26 @@ class MateriaController extends Controller
      */
     public function store(StoreMateriaRequest $request): JsonResponse
     {
-        $materia = Materia::create($request->validated());
-        $materia->load(['carrera.facultad']);
+        $validated = $request->validated();
+        
+        // Extraer carreras si viene en el request
+        $carreras = $validated['carreras'] ?? [];
+        unset($validated['carreras']);
+        
+        // Crear la materia
+        $materia = Materia::create($validated);
+        
+        // Asociar carreras si hay
+        if (!empty($carreras)) {
+            foreach ($carreras as $carreraData) {
+                $materia->carreras()->attach($carreraData['carrera_id'], [
+                    'semestre_sugerido' => $carreraData['semestre_sugerido'] ?? null,
+                    'obligatoria' => $carreraData['obligatoria'] ?? true,
+                ]);
+            }
+        }
+        
+        $materia->load(['carreras.facultad']);
 
         return response()->json([
             'message' => 'Materia creada exitosamente',
@@ -57,7 +76,7 @@ class MateriaController extends Controller
      */
     public function show(Materia $materia): JsonResponse
     {
-        $materia->load(['carrera.facultad', 'grupos.docente.usuario']);
+        $materia->load(['carreras.facultad', 'grupos.docente.usuario']);
 
         return response()->json([
             'materia' => $materia,
@@ -69,8 +88,28 @@ class MateriaController extends Controller
      */
     public function update(UpdateMateriaRequest $request, Materia $materia): JsonResponse
     {
-        $materia->update($request->validated());
-        $materia->load(['carrera.facultad']);
+        $validated = $request->validated();
+        
+        // Extraer carreras si viene en el request
+        $carreras = $validated['carreras'] ?? [];
+        unset($validated['carreras']);
+        
+        // Actualizar la materia
+        $materia->update($validated);
+        
+        // Sincronizar carreras si hay
+        if (!empty($carreras)) {
+            $sync = [];
+            foreach ($carreras as $carreraData) {
+                $sync[$carreraData['carrera_id']] = [
+                    'semestre_sugerido' => $carreraData['semestre_sugerido'] ?? null,
+                    'obligatoria' => $carreraData['obligatoria'] ?? true,
+                ];
+            }
+            $materia->carreras()->sync($sync);
+        }
+        
+        $materia->load(['carreras.facultad']);
 
         return response()->json([
             'message' => 'Materia actualizada exitosamente',

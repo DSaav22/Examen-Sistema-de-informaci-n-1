@@ -16,6 +16,9 @@ const Create = () => {
     docente_id: '',
     gestion_academica_id: '',
     nombre_grupo: '',
+    cupos_ofrecidos: 30, // Valor por defecto
+    inscritos: 0,
+    estado: 'Abierto', // Valor por defecto
   });
 
   useEffect(() => {
@@ -267,6 +270,77 @@ const Create = () => {
                       </svg>
                       {errors.gestion_academica_id[0]}
                     </p>
+                  )}
+                </div>
+
+                {/* Nuevos Campos: Cupos, Inscritos, Estado */}
+                {/* Cupos Ofrecidos */}
+                <div>
+                  <label htmlFor="cupos_ofrecidos" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Cupos Ofrecidos
+                  </label>
+                  <input
+                    type="number"
+                    id="cupos_ofrecidos"
+                    name="cupos_ofrecidos"
+                    value={formData.cupos_ofrecidos}
+                    onChange={handleChange}
+                    min="1"
+                    max="200"
+                    className={`block w-full border ${
+                      errors.cupos_ofrecidos ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    } rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm`}
+                    placeholder="Ej: 30"
+                  />
+                  {errors.cupos_ofrecidos && (
+                    <p className="mt-2 text-sm text-red-600">{errors.cupos_ofrecidos[0]}</p>
+                  )}
+                </div>
+
+                {/* Inscritos */}
+                <div>
+                  <label htmlFor="inscritos" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Inscritos
+                  </label>
+                  <input
+                    type="number"
+                    id="inscritos"
+                    name="inscritos"
+                    value={formData.inscritos}
+                    onChange={handleChange}
+                    min="0"
+                    max="200"
+                    className={`block w-full border ${
+                      errors.inscritos ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    } rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm`}
+                    placeholder="Ej: 0"
+                  />
+                  {errors.inscritos && (
+                    <p className="mt-2 text-sm text-red-600">{errors.inscritos[0]}</p>
+                  )}
+                </div>
+
+                {/* Estado */}
+                <div>
+                  <label htmlFor="estado" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Estado
+                  </label>
+                  <select
+                    id="estado"
+                    name="estado"
+                    value={formData.estado}
+                    onChange={handleChange}
+                    className={`block w-full border ${
+                      errors.estado ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    } rounded-lg shadow-sm py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm`}
+                  >
+                    <option value="Abierto">Abierto</option>
+                    <option value="Cerrado">Cerrado</option>
+                    <option value="En Curso">En Curso</option>
+                    <option value="Finalizado">Finalizado</option>
+                  </select>
+                  {errors.estado && (
+                    <p className="mt-2 text-sm text-red-600">{errors.estado[0]}</p>
                   )}
                 </div>
               </div>

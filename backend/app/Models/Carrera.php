@@ -47,10 +47,13 @@ class Carrera extends Model
     }
 
     /**
-     * Relación: Una carrera tiene muchas materias
+     * Relación: Una carrera tiene muchas materias (Muchos a Muchos)
+     * Tabla pivote: carrera_materia
      */
     public function materias()
     {
-        return $this->hasMany(Materia::class, 'carrera_id');
+        return $this->belongsToMany(Materia::class, 'carrera_materia')
+            ->withPivot('semestre_sugerido', 'obligatoria')
+            ->withTimestamps();
     }
 }

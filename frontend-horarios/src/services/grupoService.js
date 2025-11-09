@@ -45,10 +45,13 @@ const grupoService = {
 
   // Asignar horario a un grupo (usa /horarios directamente)
   assignHorario: async (grupoId, data) => {
-    // Agregar grupo_id al objeto data
+    // Agregar grupo_id al objeto data y convertir todos los IDs a números
     const horarioData = {
       ...data,
-      grupo_id: grupoId
+      grupo_id: parseInt(grupoId, 10),
+      dia_semana: parseInt(data.dia_semana, 10),
+      aula_id: parseInt(data.aula_id, 10),
+      docente_id: data.docente_id ? parseInt(data.docente_id, 10) : undefined
     };
     const response = await api.post('/horarios', horarioData);
     return response.data;

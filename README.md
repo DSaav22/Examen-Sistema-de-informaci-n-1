@@ -1,52 +1,480 @@
-# 🎓 Sistema de Gestión de Horarios Universitarios# 🎓 Sistema de Gestión de Horarios Universitarios
+# 🎓 Sistema de Gestión de Horarios Universitarios
 
+Sistema web completo para la asignación inteligente de horarios académicos, gestión de aulas, materias, docentes y control de conflictos en tiempo real.
 
-
-Sistema web completo para la asignación de horarios, gestión de aulas, materias, docentes y control académico.Sistema web completo para la asignación de horarios, gestión de aulas, materias, docentes y control académico.
-
-
-
-**Stack Tecnológico**: Laravel 11 + React 18 + PostgreSQL 15 + Tailwind CSS**Stack Tecnológico**: Laravel 11 + React 18 + PostgreSQL 15 + Tailwind CSS
-
-
+**Stack Tecnológico:** Laravel 11 (API REST) + React 18 (SPA) + PostgreSQL 15 + Tailwind CSS
 
 ---
 
+## 📋 Tabla de Contenidos
 
+1. [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
+2. [Stack Tecnológico](#-stack-tecnológico)
+3. [Instrucciones de Ejecución Local](#-instrucciones-de-ejecución-local)
+4. [Credenciales de Prueba](#-credenciales-de-prueba)
+5. [Módulos Implementados](#-módulos-implementados)
+6. [Guía de Despliegue](#-guía-de-despliegue)
 
-## 📋 Tabla de Contenidos```---
+---
 
+## 🏗️ Arquitectura del Proyecto
 
+### Estructura Monorepo
 
-1. [Arquitectura y Stack](#1-arquitectura-y-stack)Examen-Sistema-de-informaci-n-1/
-
-2. [Instrucciones de Ejecución Local](#2-instrucciones-de-ejecución-local)
-
-3. [Credenciales de Prueba](#3-credenciales-de-prueba)├── backend/                    # Backend Laravel (API REST)## 🚀 Características Implementadas (Sprint 1)
-
-4. [Estructura de Módulos](#4-estructura-de-módulos-status-actual)
-
-5. [Notas de Despliegue (GCP)](#5-notas-de-despliegue-gcp)│   ├── app/                   # Modelos, Controladores API, Middleware
-
-
-
----│   ├── config/                # Configuración (CORS, Sanctum, etc.)### ✅ Autenticación y Autorización (RBAC)
-
-
-
-## 1. Arquitectura y Stack│   ├── database/              # Migraciones y Seeders- Sistema de autenticación completo con Laravel Breeze
-
-
-
-### 🏗️ Estructura del Proyecto│   ├── routes/api.php         # Rutas API- 3 roles de usuario: `administrador`, `coordinador`, `docente`
-
-
-
-```│   ├── .env                   # Configuración de entorno- Middleware personalizado para control de acceso basado en roles
-
+```
 Examen-Sistema-de-informaci-n-1/
+├── backend/                    # Backend Laravel 11 (API REST)
+│   ├── app/
+│   │   ├── Models/            # Eloquent Models
+│   │   ├── Http/Controllers/  # API Controllers
+│   │   ├── Http/Middleware/   # Role-based middleware
+│   │   └── Exports/           # Excel/PDF Exports
+│   ├── database/
+│   │   ├── migrations/        # Schema migrations
+│   │   └── seeders/           # Data seeders
+│   ├── routes/api.php         # API Routes
+│   ├── .env                   # Environment config
+│   ├── Dockerfile             # Docker image config
+│   ├── nginx.conf             # Nginx config
+│   └── supervisord.conf       # Process manager
+│
+└── frontend-horarios/         # Frontend React 18 (SPA)
+    ├── src/
+    │   ├── pages/             # Page components
+    │   ├── components/        # Reusable components
+    │   ├── services/          # API client services
+    │   ├── layouts/           # Layout components
+    │   └── App.jsx            # Main app component
+    ├── public/                # Static assets
+    ├── firebase.json          # Firebase Hosting config
+    └── vite.config.js         # Vite bundler config
+```
 
-├── backend/                      # API REST con Laravel 11│   └── composer.json          # Dependencias PHP- Usuarios de prueba pre-configurados
+### Flujo de Arquitectura
+
+```
+[React SPA (Firebase)] ←→ [Laravel API (Cloud Run)] ←→ [PostgreSQL (Cloud SQL)]
+      (Cliente)              (Backend REST)              (Base de Datos)
+```
+
+---
+
+## 💻 Stack Tecnológico
+
+### Backend (API REST)
+- **Framework:** Laravel 11 (PHP 8.3)
+- **Base de Datos:** PostgreSQL 15.14
+- **Autenticación:** Laravel Sanctum (Tokens SPA)
+- **Exportación:** Laravel Excel (Maatwebsite), DomPDF (Barryvdh)
+- **ORM:** Eloquent
+- **Validación:** Form Requests
+- **Servidor:** Nginx + PHP-FPM (Socket Unix)
+
+### Frontend (SPA)
+- **Framework:** React 18
+- **Routing:** React Router v6
+- **Estilos:** Tailwind CSS 3
+- **Build Tool:** Vite 5
+- **HTTP Client:** Axios
+- **Icons:** React Icons
+
+### Infraestructura (GCP)
+- **Backend Hosting:** Google Cloud Run (Contenedores Docker)
+- **Frontend Hosting:** Firebase Hosting
+- **Base de Datos:** Cloud SQL for PostgreSQL
+- **Conexión DB:** Cloud SQL Proxy (Unix Socket)
+
+---
+
+## 🚀 Instrucciones de Ejecución Local
+
+### Prerrequisitos
+
+- **PHP:** 8.3 o superior
+- **Composer:** 2.x
+- **Node.js:** 18 o superior
+- **PostgreSQL:** 15 o superior
+- **Git:** Para clonar el repositorio
+
+### 1️⃣ Configuración del Backend (Laravel)
+
+```powershell
+# Navegar al directorio backend
+cd backend
+
+# Instalar dependencias PHP
+composer install
+
+# Copiar archivo de configuración
+cp .env.example .env
+
+# Configurar base de datos en .env
+# DB_CONNECTION=pgsql
+# DB_HOST=127.0.0.1
+# DB_PORT=5432
+# DB_DATABASE=sistema_horarios
+# DB_USERNAME=postgres
+# DB_PASSWORD=tu_contraseña
+
+# Generar clave de aplicación
+php artisan key:generate
+
+# Ejecutar migraciones y seeders
+php artisan migrate:fresh --seed
+
+# Iniciar servidor de desarrollo
+php artisan serve
+# El backend estará disponible en: http://localhost:8000
+```
+
+### 2️⃣ Configuración del Frontend (React)
+
+```powershell
+# Abrir nueva terminal y navegar al frontend
+cd frontend-horarios
+
+# Instalar dependencias Node
+npm install
+
+# Configurar API URL en .env
+# VITE_API_URL=http://localhost:8000/api
+
+# Iniciar servidor de desarrollo
+npm run dev
+# El frontend estará disponible en: http://localhost:5173
+```
+
+### 3️⃣ Acceder a la Aplicación
+
+1. Abrir navegador en: `http://localhost:5173`
+2. Usar credenciales de prueba (ver sección siguiente)
+3. El backend debe estar corriendo en: `http://localhost:8000`
+
+---
+
+## 🔐 Credenciales de Prueba
+
+El sistema incluye usuarios pre-configurados con diferentes roles:
+
+### 👤 Administrador (Acceso Total)
+```
+Email: admin@example.com
+Contraseña: password
+Permisos: Gestión completa del sistema
+```
+
+### 👨‍💼 Coordinador (Gestión Académica)
+```
+Email: coordinador@example.com
+Contraseña: password
+Permisos: Asignación de horarios, gestión de grupos y materias
+```
+
+### �‍🏫 Docente (Consulta)
+```
+Email: docente@example.com
+Contraseña: password
+Permisos: Visualización de horarios asignados
+```
+
+---
+
+## 📦 Módulos Implementados
+
+### ✅ 1. Sistema de Autenticación (RBAC)
+- Login/Logout con Laravel Sanctum
+- Control de acceso basado en roles (Admin, Coordinador, Docente)
+- Middleware personalizado para protección de rutas
+- Gestión de sesiones seguras
+
+### ✅ 2. Gestión de Facultades
+- CRUD completo (Crear, Leer, Actualizar, Eliminar)
+- Validación de datos
+- Relación con Carreras
+
+### ✅ 3. Gestión de Carreras
+- CRUD completo con asociación a Facultades
+- **Relación Many-to-Many con Materias** (nueva estructura)
+- Paginación y búsqueda
+- Validación de datos únicos
+
+### ✅ 4. Gestión de Materias
+- CRUD completo
+- **Asociación múltiple a Carreras** (tabla pivot con semestre_sugerido, obligatoria)
+- Validación de códigos únicos
+- Relación con Grupos
+
+### ✅ 5. Gestión de Docentes
+- CRUD completo
+- **Campo cargo académico** (Profesor Titular, Asociado, Auxiliar)
+- Asociación con usuarios del sistema
+- Importación masiva vía CSV/Excel
+- Validación de datos de contacto
+
+### ✅ 6. Gestión de Aulas
+- CRUD completo
+- Validación de capacidad
+- Control de disponibilidad
+- Asignación a horarios
+
+### ✅ 7. Gestión de Grupos
+- CRUD completo con relaciones (Materia, Docente, Gestión Académica)
+- **Nuevos campos:** cupos_ofrecidos, inscritos, estado (Abierto/Cerrado/En Curso/Finalizado)
+- Asignación múltiple de horarios
+- Detección de conflictos en tiempo real
+
+### ✅ 8. Asignación Inteligente de Horarios
+- Interfaz drag-and-drop para asignar horarios
+- **Detección automática de 5 tipos de conflictos:**
+  1. Docente ya asignado en mismo horario
+  2. Aula ocupada en mismo horario
+  3. Grupo con horarios duplicados
+  4. Horarios fuera del rango académico (7:00-21:00)
+  5. Solapamiento de rangos horarios
+- Validación antes de guardar
+credencialeo real
+
+### ✅ 9. Control de Asistencia Docente
+- Registro de asistencia por horario
+- Estados: Presente, Ausente, Justificado, Tardanza
+- Dashboard de estadísticas de asistencia
+- Visualización por docente y período
+
+### ✅ 10. Reportes y Exportación
+- **Exportación a Excel:** Listado de docentes con filtros
+- **Exportación a PDF:** Parrilla de horarios por grupo
+- **Parrilla global de horarios:** Vista completa de todos los horarios asignados
+- Filtros por facultad, carrera, gestión académica
+
+### ✅ 11. Importación Masiva
+- Importación de docentes vía CSV/Excel
+- Validación de datos en segundo plano
+- Soporte para archivos grandes
+- Feedback de errores y registros importados
+
+---
+
+## 📊 Esquema de Base de Datos (Principales Tablas)
+
+```sql
+-- Estructura principal
+users (id, name, email, password, role_id)
+roles (id, nombre, descripcion)
+facultades (id, nombre, codigo, activo)
+carreras (id, nombre, codigo, facultad_id, activo)
+materias (id, sigla, nombre, nivel, creditos, activo)
+carrera_materia (carrera_id, materia_id, semestre_sugerido, obligatoria) -- PIVOT M:N
+docentes (id, nombre, apellidos, email, especialidad, cargo)
+aulas (id, codigo, nombre, capacidad, edificio, piso, activo)
+gestiones_academicas (id, nombre, fecha_inicio, fecha_fin, activo)
+grupos (id, materia_id, docente_id, gestion_id, cupos_ofrecidos, inscritos, estado)
+horarios (id, grupo_id, aula_id, dia_semana, hora_inicio, hora_fin)
+asistencias (id, horario_id, docente_id, fecha, estado, observaciones)
+```
+
+### Cambios Estructurales Recientes (Nov 2025)
+
+1. **Materias ↔ Carreras:** Cambio de One-to-Many a **Many-to-Many**
+   - Una materia puede pertenecer a múltiples carreras
+   - Tabla pivot: `carrera_materia` con campos `semestre_sugerido`, `obligatoria`
+
+2. **Grupos:** Nuevas columnas de control
+   - `cupos_ofrecidos`: Capacidad total del grupo
+   - `inscritos`: Estudiantes inscritos actualmente
+   - `estado`: Enum (Abierto, Cerrado, En Curso, Finalizado)
+
+3. **Docentes:** Campo de cargo académico
+   - `cargo`: varchar(100) - Ejemplos: "Profesor Titular", "Profesor Asociado"
+
+---
+
+## 🌐 Guía de Despliegue
+
+### Backend en Google Cloud Run
+
+#### 1. Preparar imagen Docker
+
+```bash
+cd backend
+
+# Build de la imagen
+docker build -t gcr.io/[TU-PROJECT-ID]/horarios-backend:latest .
+
+# Push a Google Container Registry
+docker push gcr.io/[TU-PROJECT-ID]/horarios-backend:latest
+```
+
+#### 2. Configurar Cloud SQL
+
+```bash
+# Crear instancia PostgreSQL
+gcloud sql instances create horarios-db \
+  --database-version=POSTGRES_15 \
+  --tier=db-f1-micro \
+  --region=us-central1
+
+# Crear base de datos
+gcloud sql databases create sistema_horarios \
+  --instance=horarios-db
+
+# Configurar usuario
+gcloud sql users set-password postgres \
+  --instance=horarios-db \
+  --password=[TU-PASSWORD]
+```
+
+#### 3. Desplegar en Cloud Run
+
+```bash
+gcloud run deploy horarios-backend \
+  --image gcr.io/[TU-PROJECT-ID]/horarios-backend:latest \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --add-cloudsql-instances [TU-PROJECT-ID]:us-central1:horarios-db \
+  --set-env-vars "DB_CONNECTION=pgsql,DB_HOST=/cloudsql/[TU-PROJECT-ID]:us-central1:horarios-db,DB_DATABASE=sistema_horarios"
+```
+
+#### 4. Ejecutar migraciones
+
+```bash
+# Conectar via Cloud SQL Proxy
+gcloud sql connect horarios-db --user=postgres
+
+# Desde otro terminal, ejecutar migraciones
+php artisan migrate:fresh --seed --force
+```
+
+### Frontend en Firebase Hosting
+
+#### 1. Instalar Firebase CLI
+
+```bash
+npm install -g firebase-tools
+firebase login
+```
+
+#### 2. Configurar proyecto
+
+```bash
+cd frontend-horarios
+
+# Inicializar Firebase (si es primera vez)
+firebase init hosting
+
+# Seleccionar proyecto existente o crear uno nuevo
+# Configurar 'dist' como directorio público
+```
+
+#### 3. Configurar API URL
+
+```bash
+# Editar .env.production
+VITE_API_URL=https://[TU-CLOUD-RUN-URL]/api
+```
+
+#### 4. Build y Deploy
+
+```bash
+# Build de producción
+npm run build
+
+# Deploy a Firebase
+firebase deploy --only hosting
+```
+
+### URLs de Ejemplo Post-Despliegue
+
+```
+Backend API: https://horarios-backend-xxxxxxxxxx-uc.a.run.app
+Frontend: https://tu-proyecto.web.app
+Database: [TU-PROJECT-ID]:us-central1:horarios-db
+```
+
+---
+
+## 📝 Notas de Desarrollo
+
+### Variables de Entorno Críticas (Backend)
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://horarios-backend-xxx.a.run.app
+
+DB_CONNECTION=pgsql
+DB_HOST=/cloudsql/[PROJECT_ID]:[REGION]:[INSTANCE]
+DB_PORT=5432
+DB_DATABASE=sistema_horarios
+DB_USERNAME=postgres
+DB_PASSWORD=[TU_PASSWORD]
+
+SANCTUM_STATEFUL_DOMAINS=tu-proyecto.web.app
+SESSION_DOMAIN=.a.run.app
+```
+
+### Variables de Entorno Críticas (Frontend)
+
+```env
+VITE_API_URL=https://horarios-backend-xxx.a.run.app/api
+```
+
+### Comandos Útiles
+
+```bash
+# Backend - Limpiar caché
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+# Backend - Optimización producción
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Frontend - Build de producción
+npm run build
+
+# Frontend - Preview build local
+npm run preview
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Problema: "CSRF token mismatch"
+**Solución:** Verificar `SANCTUM_STATEFUL_DOMAINS` en `.env` y dominio CORS en `config/cors.php`
+
+### Problema: "Connection refused" a PostgreSQL
+**Solución:** Verificar que Cloud SQL Proxy esté corriendo y `DB_HOST` use socket Unix correcto
+
+### Problema: "500 Internal Server Error" en API
+**Solución:** Revisar logs con `docker logs [CONTAINER_ID]` o logs de Cloud Run
+
+### Problema: Frontend no conecta con Backend
+**Solución:** Verificar `VITE_API_URL` en `.env.production` y rebuild frontend
+
+---
+
+## 📞 Soporte y Contacto
+
+**Desarrollador:** Diego Saavedra  
+**Proyecto:** Sistema de Gestión de Horarios Universitarios  
+**Fecha:** Noviembre 2025  
+**Repositorio:** DSaav22/Examen-Sistema-de-informaci-n-1
+
+---
+
+## 📄 Licencia
+
+Este proyecto es parte de un examen académico de Sistemas de Información 1.
+
+---
+
+**Estado del Proyecto:** ✅ Backend Completo | ✅ Frontend Completo | ⚠️ Despliegue Pendiente
+
 
 │   ├── app/
 

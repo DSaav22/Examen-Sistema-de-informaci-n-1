@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\GrupoController;
 use App\Http\Controllers\Api\HorarioController;
 use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\ReporteController;
+use App\Http\Controllers\Api\ImportController;
+use App\Http\Controllers\Api\AsistenciaController;
+use App\Http\Controllers\Api\CargaHorariaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +45,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Docentes
     Route::apiResource('docentes', DocenteController::class);
     Route::get('/docentes-form-data', [DocenteController::class, 'formData']);
+    Route::get('/docentes/export/excel', [DocenteController::class, 'exportExcel']);
+    Route::get('/docentes/export/pdf', [DocenteController::class, 'exportPdf']);
+
+    // Importación masiva (Administrador y Coordinador)
+    Route::post('/importar/docentes', [ImportController::class, 'importDocentes']);
+    Route::post('/importar/carga-horaria', [CargaHorariaController::class, 'importar']);
+
+    // Asistencia (Docentes)
+    Route::get('/asistencia/hoy', [AsistenciaController::class, 'clasesDeHoy']);
+    Route::post('/asistencia/registrar', [AsistenciaController::class, 'registrarAsistencia']);
+    Route::post('/asistencia/registrar-qr', [AsistenciaController::class, 'registrarAsistenciaQr']);
 
     // Gestiones Académicas
     Route::apiResource('gestiones', GestionAcademicaController::class);
@@ -57,4 +71,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Reportes
     Route::get('/reportes/horarios-filtros', [ReporteController::class, 'getFiltros']);
     Route::get('/reportes/horarios-global', [ReporteController::class, 'getHorariosGlobal']);
+    Route::get('/reportes/asistencia-docente', [ReporteController::class, 'reporteAsistenciaDocente']);
+    Route::get('/reportes/aulas-disponibles', [ReporteController::class, 'reporteAulasDisponibles']);
 });

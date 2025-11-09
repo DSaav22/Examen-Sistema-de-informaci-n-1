@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('sigla', 20)->unique()->comment('Sigla única de la materia (ej: MAT-101)');
             $table->string('nombre', 150)->comment('Nombre de la materia');
-            $table->foreignId('carrera_id')->constrained('carreras')->onDelete('restrict')->comment('Relación con carreras');
+            // ❌ ELIMINADO: carrera_id - Ahora se usa relación M:N con tabla pivote carrera_materia
+            // $table->foreignId('carrera_id')->constrained('carreras')->onDelete('restrict')->comment('Relación con carreras');
             $table->integer('nivel')->comment('Nivel o semestre: 1, 2, 3...');
             $table->integer('creditos')->default(4)->comment('Créditos académicos');
             $table->integer('horas_semanales')->default(4)->comment('Horas de clase por semana');

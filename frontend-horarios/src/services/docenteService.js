@@ -36,6 +36,35 @@ const docenteService = {
     const response = await api.get('/docentes-form-data');
     return response.data;
   },
+
+  // Importar docentes desde archivo CSV/Excel
+  importDocentes: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post('/importar/docentes', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Exportar docentes a Excel
+  exportExcel: async () => {
+    const response = await api.get('/docentes/export/excel', {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
+  // Exportar docentes a PDF
+  exportPdf: async () => {
+    const response = await api.get('/docentes/export/pdf', {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };
 
 export default docenteService;

@@ -40,7 +40,7 @@ class GrupoController extends Controller
      */
     public function formData(): JsonResponse
     {
-        $materias = Materia::with('carrera')
+        $materias = Materia::with('carreras')
             ->where('activo', true)
             ->orderBy('nombre')
             ->get();
@@ -61,12 +61,18 @@ class GrupoController extends Controller
             ->orderBy('nombre')
             ->get();
 
+        // Añadimos grupos con la relación materia cargada (eager-loading)
+        $grupos = Grupo::with('materia')
+            ->orderBy('nombre_grupo')
+            ->get();
+
         return response()->json([
             'materias' => $materias,
             'docentes' => $docentes,
             'gestiones' => $gestiones,
             'aulas' => $aulas,
             'carreras' => $carreras,
+            'grupos' => $grupos,
         ], 200);
     }
 
@@ -76,7 +82,7 @@ class GrupoController extends Controller
     public function store(StoreGrupoRequest $request): JsonResponse
     {
         $grupo = Grupo::create($request->validated());
-        $grupo->load(['materia.carrera', 'docente.usuario', 'gestionAcademica']);
+        $grupo->load(['materia.carreras', 'docente.usuario', 'gestionAcademica']);
 
         return response()->json([
             'message' => 'Grupo creado exitosamente',
@@ -93,7 +99,7 @@ class GrupoController extends Controller
         try {
             // Cargar todas las relaciones necesarias para la página Grupos/Show.jsx
             $grupo->load([
-                'materia.carrera',        // Para la tarjeta "Materia"
+                'materia.carreras',       // Para la tarjeta "Materia"
                 'docente.usuario',        // Para la tarjeta "Docente"
                 'gestionAcademica',       // Para la tarjeta "Gestión"
                 'horarios',               // Para la tabla "Horarios Asignados"
@@ -120,7 +126,7 @@ class GrupoController extends Controller
     public function update(UpdateGrupoRequest $request, Grupo $grupo): JsonResponse
     {
         $grupo->update($request->validated());
-        $grupo->load(['materia.carrera', 'docente.usuario', 'gestionAcademica']);
+        $grupo->load(['materia.carreras', 'docente.usuario', 'gestionAcademica']);
 
         return response()->json([
             'message' => 'Grupo actualizado exitosamente',

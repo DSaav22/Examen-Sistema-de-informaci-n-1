@@ -1,46 +1,108 @@
-# Git
-.git
+.git# Dependencias# Git
+
 .gitignore
-.gitattributes
 
-# IDE
-.vscode
-.idea
-*.swp
-*.swo
-*~
+.env/vendor/.git
 
-# Dependencies
-node_modules
-vendor
+.env.cloud
 
-# Build
-public/hot
-public/storage
-storage/*.key
+.env.example/node_modules/.gitignore
 
-# Environment
-.env
-.env.*
-!.env.example
-
-# Tests
-tests
-phpunit.xml
-.phpunit.result.cache
-
-# Logs
-*.log
 storage/logs/*
 
+storage/framework/cache/data/*.gitattributes
+
+storage/framework/sessions/*
+
+storage/framework/views/*# Control de versiones
+
+vendor/
+
+node_modules/.git/# IDE
+
+cloud_sql_proxy.exe
+
+tests/.gitignore.vscode
+
+*.md
+
+README.md.gitattributes.idea
+
+
+*.swp
+
+# Archivos de entorno*.swo
+
+.env*~
+
+.env.backup
+
+.env.production# Dependencies
+
+node_modules
+
+# Storage y cachévendor
+
+/storage/*.key
+
+/storage/logs/# Build
+
+/storage/framework/cache/public/hot
+
+/storage/framework/sessions/public/storage
+
+/storage/framework/testing/storage/*.key
+
+/storage/framework/views/
+
+/bootstrap/cache/*.php# Environment
+
+.env
+
+# IDEs y editores.env.*
+
+.idea/!.env.example
+
+.vscode/
+
+*.swp# Tests
+
+*.swotests
+
+*~phpunit.xml
+
+.DS_Store.phpunit.result.cache
+
+
+
+# Testing# Logs
+
+.phpunit.result.cache*.log
+
+/tests/storage/logs/*
+
+/.phpunit.cache
+
 # Documentation
-README.md
-INSTALACION.md
-GUIA_DESPLIEGUE.md
-RESUMEN_LIMPIEZA.md
-SISTEMA_HORARIOS_COMPLETADO.md
+
+# Documentación y otrosREADME.md
+
+README.mdINSTALACION.md
+
+*.mdGUIA_DESPLIEGUE.md
+
+docker-compose.ymlRESUMEN_LIMPIEZA.md
+
+.dockerignoreSISTEMA_HORARIOS_COMPLETADO.md
+
+Dockerfile
 
 # Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
+
+# Archivos temporalesDockerfile
+
+*.logdocker-compose.yml
+
+*.tmp.dockerignore
+
+*.cache

@@ -20,6 +20,20 @@ class Asistencia extends Model implements Auditable
         'hora_registro',
         'token_id',
         'estado',
+        'metodo_registro',
         'observaciones',
     ];
+
+    protected $casts = [
+        'fecha' => 'date',
+        'hora_registro' => 'datetime:H:i:s',
+    ];
+
+    /**
+     * Relación con Horario
+     */
+    public function horario()
+    {
+        return $this->belongsTo(Horario::class);
+    }
 }

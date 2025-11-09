@@ -31,6 +31,12 @@ const HorarioGlobal = () => {
     loadFiltros();
   }, []);
 
+  // Debug: Monitorear cambios en el estado de horarios
+  useEffect(() => {
+    console.log('Estado de horarios actualizado:', horarios);
+    console.log('Cantidad en estado:', horarios.length);
+  }, [horarios]);
+
   const loadFiltros = async () => {
     try {
       setLoadingFiltros(true);
@@ -63,11 +69,14 @@ const HorarioGlobal = () => {
         ...(docenteId && { docente_id: docenteId })
       };
       const data = await reporteService.getHorariosGlobal(params);
+      console.log('Respuesta completa de la API:', data); // Debug
       console.log('Horarios cargados:', data.horarios); // Debug
+      console.log('Cantidad de horarios:', data.horarios?.length); // Debug
       setHorarios(data.horarios || []);
     } catch (error) {
       console.error('Error al cargar horarios:', error);
       setErrors({ submit: error.response?.data?.message || 'Error al cargar los horarios' });
+      setHorarios([]); // Limpiar horarios en caso de error
     } finally {
       setLoading(false);
     }
@@ -92,10 +101,26 @@ const HorarioGlobal = () => {
   };
 
   const getHorarioEnCelda = (diaNumero, hora) => {
-    return horarios.filter(h => {
-      const horaInicio = h.hora_inicio.substring(0, 5);
-      return h.dia_semana === diaNumero && horaInicio === hora;
+    const resultado = horarios.filter(h => {
+      // Validar que hora_inicio exista antes de usar substring
+      if (!h.hora_inicio) {
+        console.warn('Horario sin hora_inicio:', h);
+        return false;
+      }
+      
+      // Compara solo la parte de la HORA (los primeros 2 caracteres)
+      const horaInicioHora = h.hora_inicio.substring(0, 2);
+      const horaSlotHora = hora.substring(0, 2);
+      
+      // Usar comparación suelta (==) para ignorar diferencias de tipo
+      return h.dia_semana == diaNumero && horaInicioHora == horaSlotHora;
     });
+    
+    if (resultado.length > 0) {
+      console.log(`Horarios en celda [${diaNumero}, ${hora}]:`, resultado);
+    }
+    
+    return resultado;
   };
 
   const getColorPorMateria = (sigla) => {
@@ -235,6 +260,11 @@ const HorarioGlobal = () => {
         </div>
 
         {/* Parrilla de Horarios */}
+        {(() => {
+          console.log('Renderizando tabla. horarios.length:', horarios.length);
+          console.log('Primer horario:', horarios[0]);
+          return null;
+        })()}
         {horarios.length > 0 && (
           <div className="bg-white shadow-md rounded-lg overflow-x-auto">
             <table className="min-w-full border-collapse">

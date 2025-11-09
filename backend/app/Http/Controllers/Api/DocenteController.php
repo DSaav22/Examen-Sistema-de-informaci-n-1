@@ -7,8 +7,12 @@ use App\Models\Docente;
 use App\Models\User;
 use App\Http\Requests\StoreDocenteRequest;
 use App\Http\Requests\UpdateDocenteRequest;
+use App\Exports\DocentesExport;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class DocenteController extends Controller
 {
@@ -114,6 +118,50 @@ class DocenteController extends Controller
                 'message' => 'No se puede eliminar el docente porque tiene grupos asignados',
                 'error' => $e->getMessage(),
             ], 422);
+        }
+    }
+
+    /**
+     * Exportar docentes a Excel
+     */
+    public function exportExcel()
+    {
+        try {
+            $fileName = 'docentes_' . date('Y-m-d_His') . '.xlsx';
+            return Excel::download(new DocentesExport, $fileName);
+        } catch (\Exception $e) {
+            Log::error("Error al exportar docentes a Excel: " . $e->getMessage());
+            return response()->json([
+                'message' => 'Error al exportar a Excel',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Exportar docentes a PDF
+     */
+    public function exportPdf()
+    {
+        try {
+            $docentes = Docente::with('usuario.role')
+                ->where('activo', true)
+                ->orderBy('codigo_docente')
+                ->get();
+
+            $pdf = Pdf::loadView('exports.docentes-pdf', [
+                'docentes' => $docentes,
+                'fecha' => date('d/m/Y H:i:s')
+            ]);
+
+            $fileName = 'docentes_' . date('Y-m-d_His') . '.pdf';
+            return $pdf->download($fileName);
+        } catch (\Exception $e) {
+            Log::error("Error al exportar docentes a PDF: " . $e->getMessage());
+            return response()->json([
+                'message' => 'Error al exportar a PDF',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

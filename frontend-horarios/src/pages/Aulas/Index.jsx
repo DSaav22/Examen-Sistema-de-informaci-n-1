@@ -10,6 +10,10 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState(null);
   const [deleting, setDeleting] = useState(null);
+  
+  // Estados para el modal de QR
+  const [isQrModalVisible, setIsQrModalVisible] = useState(false);
+  const [selectedAula, setSelectedAula] = useState(null);
 
   useEffect(() => {
     loadAulas(currentPage);
@@ -56,6 +60,17 @@ const Index = () => {
         setDeleting(null);
       }
     }
+  };
+
+  // Funciones para manejar el modal de QR
+  const showQrModal = (aula) => {
+    setSelectedAula(aula);
+    setIsQrModalVisible(true);
+  };
+
+  const handleQrModalCancel = () => {
+    setIsQrModalVisible(false);
+    setSelectedAula(null);
   };
 
   const handlePageChange = (page) => {
@@ -208,6 +223,15 @@ const Index = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <button
+                          onClick={() => showQrModal(aula)}
+                          className="inline-flex items-center px-3 py-1.5 border border-purple-300 rounded-lg text-purple-700 bg-purple-50 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-150"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                          </svg>
+                          Ver QR
+                        </button>
                         <Link
                           to={`/aulas/${aula.id}/editar`}
                           className="inline-flex items-center px-3 py-1.5 border border-blue-300 rounded-lg text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150"
@@ -327,6 +351,85 @@ const Index = () => {
           </div>
         )}
       </div>
+
+      {/* Modal de Código QR */}
+      {isQrModalVisible && selectedAula && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            {/* Header del Modal */}
+            <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
+              <h2 className="text-2xl font-bold text-white flex items-center">
+                <svg className="w-7 h-7 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                </svg>
+                Código QR - {selectedAula.nombre}
+              </h2>
+            </div>
+
+            {/* Contenido del Modal */}
+            <div className="p-8">
+              <div className="text-center mb-6">
+                <div className="inline-block p-1 bg-purple-100 rounded-lg mb-4">
+                  <p className="text-sm font-semibold text-purple-800 px-3 py-1">
+                    📍 {selectedAula.edificio || 'Edificio Principal'}
+                  </p>
+                </div>
+                <p className="text-gray-600 text-sm mb-2">
+                  Imprime este código QR y pégalo en la entrada del aula.
+                </p>
+                <p className="text-gray-500 text-xs">
+                  Los docentes deberán escanearlo para registrar su asistencia.
+                </p>
+              </div>
+
+              {/* Código QR */}
+              <div className="flex justify-center mb-6">
+                <div className="p-4 bg-white border-4 border-purple-300 rounded-xl shadow-lg">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(JSON.stringify({ aula_id: selectedAula.id }))}`}
+                    alt={`QR para ${selectedAula.nombre}`}
+                    className="w-64 h-64"
+                  />
+                </div>
+              </div>
+
+              {/* Información adicional */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 font-medium">ID del Aula:</p>
+                    <p className="text-gray-900 font-bold">#{selectedAula.id}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 font-medium">Capacidad:</p>
+                    <p className="text-gray-900 font-bold">{selectedAula.capacidad} personas</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-gray-500 font-medium">Tipo:</p>
+                    <p className="text-gray-900 font-bold">{selectedAula.tipo}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => window.print()}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 font-medium"
+                >
+                  🖨️ Imprimir QR
+                </button>
+                <button
+                  onClick={handleQrModalCancel}
+                  className="flex-1 bg-gray-200 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 font-medium"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };

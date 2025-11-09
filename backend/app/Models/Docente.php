@@ -22,6 +22,7 @@ class Docente extends Model implements Auditable
         'usuario_id',
         'codigo_docente',
         'especialidad',
+        'cargo',
         'grado_academico',
         'fecha_contratacion',
         'tipo_contrato',

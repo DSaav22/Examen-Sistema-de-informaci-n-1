@@ -38,6 +38,7 @@ class UpdateDocenteRequest extends FormRequest
             ],
             'especialidad' => 'nullable|string|max:100',
             'grado_academico' => 'required|in:Licenciatura,Maestría,Doctorado',
+            'cargo' => 'nullable|string|max:100',
             'fecha_contratacion' => 'nullable|date',
             'tipo_contrato' => 'required|in:Tiempo Completo,Medio Tiempo,Por Horas',
             'activo' => 'boolean',
@@ -56,6 +57,7 @@ class UpdateDocenteRequest extends FormRequest
             'codigo_docente.required' => 'El código del docente es obligatorio.',
             'codigo_docente.unique' => 'Este código ya está registrado.',
             'grado_academico.required' => 'El grado académico es obligatorio.',
+            'cargo.max' => 'El cargo no puede exceder 100 caracteres.',
             'tipo_contrato.required' => 'El tipo de contrato es obligatorio.',
         ];
     }

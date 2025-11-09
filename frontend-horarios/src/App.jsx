@@ -15,6 +15,7 @@ import UsuariosEdit from './pages/Usuarios/Edit';
 import DocentesIndex from './pages/Docentes/Index';
 import DocentesCreate from './pages/Docentes/Create';
 import DocentesEdit from './pages/Docentes/Edit';
+import DocentesImportar from './pages/Docentes/Importar';
 import GestionesIndex from './pages/Gestiones/Index';
 import GestionesCreate from './pages/Gestiones/Create';
 import GestionesEdit from './pages/Gestiones/Edit';
@@ -24,6 +25,9 @@ import GruposEdit from './pages/Grupos/Edit';
 import GruposShow from './pages/Grupos/Show';
 import AsignarHorarios from './pages/Horarios/AsignarHorarios';
 import HorarioGlobal from './pages/Reportes/HorarioGlobal';
+import ReporteAsistencia from './pages/Reportes/ReporteAsistencia';
+import AulasDisponibles from './pages/Reportes/AulasDisponibles';
+import CargaHoraria from './pages/Importar/CargaHoraria';
 import './App.css';
 
 function App() {
@@ -141,6 +145,14 @@ function App() {
             }
           />
           <Route
+            path="/docentes/importar"
+            element={
+              <ProtectedRoute>
+                <DocentesImportar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/docentes/:id/editar"
             element={
               <ProtectedRoute>
@@ -225,6 +237,32 @@ function App() {
             element={
               <ProtectedRoute>
                 <HorarioGlobal />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reportes/asistencia-docente"
+            element={
+              <ProtectedRoute>
+                <ReporteAsistencia />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reportes/aulas-disponibles"
+            element={
+              <ProtectedRoute>
+                <AulasDisponibles />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Rutas de Importación */}
+          <Route
+            path="/importar/carga-horaria"
+            element={
+              <ProtectedRoute>
+                <CargaHoraria />
               </ProtectedRoute>
             }
           />

@@ -1,0 +1,6 @@
+facultad,carrera,sigla_materia,nombre_materia,nivel,creditos,horas_programadas,codigo_docente,nombre_docente,cargo,nombre_grupo,cupos_ofrecidos,inscritos,estado
+Facultad de Tecnología,Ingeniería de Sistemas,SIS101,Programación I,1,4,4,DOC001,Juan Pérez Rojas,Docente Titular,A,40,35,Abierto
+Facultad de Tecnología,Ingeniería de Sistemas,SIS102,Matemáticas I,1,4,4,DOC002,María López García,Docente Auxiliar,B,40,38,Abierto
+Facultad de Tecnología,Ingeniería de Sistemas,SIS201,Bases de Datos,2,5,6,DOC003,Carlos Gómez Silva,Docente Titular,A,35,30,Abierto
+Facultad de Tecnología,Ingeniería Industrial,IND101,Introducción a la Ingeniería,1,3,3,DOC004,Ana Martínez Luna,Docente Asociado,A,45,42,Abierto
+Facultad de Tecnología,Ingeniería Industrial,IND102,Física I,1,4,5,DOC005,Roberto Sánchez Cruz,Docente Titular,B,40,35,Abierto

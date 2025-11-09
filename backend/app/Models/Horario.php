@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class Horario extends Model implements Auditable
@@ -21,23 +22,11 @@ class Horario extends Model implements Auditable
     protected $fillable = [
         'grupo_id',
         'aula_id',
+        'docente_id',
         'dia_semana',
         'hora_inicio',
         'hora_fin',
     ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'hora_inicio' => 'datetime:H:i',
-            'hora_fin' => 'datetime:H:i',
-        ];
-    }
 
     /**
      * Relación: Un horario pertenece a un grupo
@@ -69,5 +58,25 @@ class Horario extends Model implements Auditable
     public function getDocenteAttribute()
     {
         return $this->grupo?->docente;
+    }
+
+    /**
+     * Formatea la hora_inicio a HH:MM.
+     */
+    protected function horaInicio(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('H:i') : null,
+        );
+    }
+
+    /**
+     * Formatea la hora_fin a HH:MM.
+     */
+    protected function horaFin(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('H:i') : null,
+        );
     }
 }

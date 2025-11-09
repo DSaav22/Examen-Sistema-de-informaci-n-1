@@ -25,6 +25,9 @@ class Grupo extends Model implements Auditable
         'nombre_grupo',
         'cupo_maximo',
         'cupo_actual',
+        'cupos_ofrecidos',
+        'inscritos',
+        'estado',
         'activo',
     ];
 
@@ -38,6 +41,8 @@ class Grupo extends Model implements Auditable
         return [
             'cupo_maximo' => 'integer',
             'cupo_actual' => 'integer',
+            'cupos_ofrecidos' => 'integer',
+            'inscritos' => 'integer',
             'activo' => 'boolean',
         ];
     }

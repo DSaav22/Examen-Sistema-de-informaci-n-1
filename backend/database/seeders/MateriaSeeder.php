@@ -19,55 +19,84 @@ class MateriaSeeder extends Seeder
         $ingSistemas = Carrera::where('nombre', 'Ingeniería de Sistemas')->first();
         $ingRedes = Carrera::where('nombre', 'Ingeniería en Redes y Telecomunicaciones')->first();
 
-        // Crear las materias
-        Materia::create([
+        // Crear Sistemas de Información I (puede ser compartida por varias carreras)
+        $materia1 = Materia::create([
             'sigla' => 'SIS-123',
             'nombre' => 'Sistemas de Información I',
-            'carrera_id' => $ingSistemas->id,
             'nivel' => 3,
             'creditos' => 4,
             'horas_semanales' => 6,
             'descripcion' => 'Introducción a los sistemas de información empresariales',
         ]);
+        // Asignar a Ingeniería de Sistemas
+        $materia1->carreras()->attach($ingSistemas->id, [
+            'semestre_sugerido' => 3,
+            'obligatoria' => true
+        ]);
 
-        Materia::create([
+        // Crear Programación I
+        $materia2 = Materia::create([
             'sigla' => 'INF-110',
             'nombre' => 'Programación I',
-            'carrera_id' => $ingInformatica->id,
             'nivel' => 1,
             'creditos' => 5,
             'horas_semanales' => 8,
             'descripcion' => 'Fundamentos de programación estructurada',
         ]);
+        // Asignar a Ingeniería Informática
+        $materia2->carreras()->attach($ingInformatica->id, [
+            'semestre_sugerido' => 1,
+            'obligatoria' => true
+        ]);
 
-        Materia::create([
+        // Crear Redes I
+        $materia3 = Materia::create([
             'sigla' => 'RED-210',
             'nombre' => 'Redes I',
-            'carrera_id' => $ingRedes->id,
             'nivel' => 4,
             'creditos' => 4,
             'horas_semanales' => 6,
             'descripcion' => 'Introducción a las redes de computadoras',
         ]);
+        // Asignar a Ingeniería en Redes
+        $materia3->carreras()->attach($ingRedes->id, [
+            'semestre_sugerido' => 4,
+            'obligatoria' => true
+        ]);
 
-        Materia::create([
+        // Crear Base de Datos I (compartida entre varias carreras)
+        $materia4 = Materia::create([
             'sigla' => 'SIS-210',
             'nombre' => 'Base de Datos I',
-            'carrera_id' => $ingSistemas->id,
             'nivel' => 4,
             'creditos' => 5,
             'horas_semanales' => 8,
             'descripcion' => 'Fundamentos de bases de datos relacionales',
         ]);
+        // Asignar a Ingeniería de Sistemas (obligatoria)
+        $materia4->carreras()->attach($ingSistemas->id, [
+            'semestre_sugerido' => 4,
+            'obligatoria' => true
+        ]);
+        // También asignar a Ingeniería Informática (obligatoria)
+        $materia4->carreras()->attach($ingInformatica->id, [
+            'semestre_sugerido' => 4,
+            'obligatoria' => true
+        ]);
 
-        Materia::create([
+        // Crear Estructura de Datos
+        $materia5 = Materia::create([
             'sigla' => 'INF-220',
             'nombre' => 'Estructura de Datos',
-            'carrera_id' => $ingInformatica->id,
             'nivel' => 4,
             'creditos' => 4,
             'horas_semanales' => 6,
             'descripcion' => 'Estudio de estructuras de datos y algoritmos',
+        ]);
+        // Asignar a Ingeniería Informática
+        $materia5->carreras()->attach($ingInformatica->id, [
+            'semestre_sugerido' => 4,
+            'obligatoria' => true
         ]);
     }
 }

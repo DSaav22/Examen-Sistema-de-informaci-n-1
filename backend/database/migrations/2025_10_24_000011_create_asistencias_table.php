@@ -13,17 +13,19 @@ return new class extends Migration
     {
         Schema::create('asistencias', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('grupo_id')->constrained('grupos')->onDelete('cascade')->comment('Relación con grupos');
-            $table->foreignId('docente_id')->constrained('docentes')->onDelete('restrict')->comment('Docente que registra la asistencia');
+            $table->foreignId('horario_id')->constrained('horarios')->onDelete('cascade')->comment('Horario específico de la clase');
             $table->date('fecha')->comment('Fecha de la clase');
             $table->time('hora_registro')->comment('Hora en que se registró la asistencia');
-            $table->enum('estado', ['Presente', 'Ausente', 'Tardanza', 'Justificado'])->default('Presente');
+            $table->enum('estado', ['presente', 'ausente', 'tardanza', 'justificado'])->default('presente');
             $table->text('observaciones')->nullable();
-            $table->string('metodo_registro', 50)->default('Manual')->comment('Manual, QR, Biométrico');
+            $table->string('metodo_registro', 50)->default('digital')->comment('digital, manual, qr, biometrico');
             $table->timestamps();
 
             // Índice para búsquedas frecuentes
-            $table->index(['grupo_id', 'fecha']);
+            $table->index(['horario_id', 'fecha']);
+            
+            // Restricción: una sola asistencia por horario por día
+            $table->unique(['horario_id', 'fecha']);
         });
     }
 

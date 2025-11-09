@@ -26,6 +26,9 @@ class StoreGrupoRequest extends FormRequest
             'materia_id' => 'required|exists:materias,id',
             'docente_id' => 'required|exists:docentes,id',
             'gestion_academica_id' => 'required|exists:gestiones_academicas,id',
+            'cupos_ofrecidos' => 'nullable|integer|min:1|max:200',
+            'inscritos' => 'nullable|integer|min:0|max:200',
+            'estado' => 'nullable|string|in:Abierto,Cerrado,En Curso,Finalizado',
         ];
     }
 
@@ -42,6 +45,11 @@ class StoreGrupoRequest extends FormRequest
             'docente_id.exists' => 'El docente seleccionado no existe.',
             'gestion_academica_id.required' => 'Debe seleccionar una gestión académica.',
             'gestion_academica_id.exists' => 'La gestión académica seleccionada no existe.',
+            'cupos_ofrecidos.integer' => 'Los cupos ofrecidos deben ser un número.',
+            'cupos_ofrecidos.min' => 'Los cupos ofrecidos deben ser al menos 1.',
+            'inscritos.integer' => 'Los inscritos deben ser un número.',
+            'inscritos.min' => 'Los inscritos no pueden ser negativos.',
+            'estado.in' => 'El estado debe ser: Abierto, Cerrado, En Curso o Finalizado.',
         ];
     }
 }

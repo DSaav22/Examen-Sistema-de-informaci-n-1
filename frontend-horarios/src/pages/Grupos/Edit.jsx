@@ -17,6 +17,9 @@ const Edit = () => {
     docente_id: '',
     gestion_academica_id: '',
     nombre_grupo: '',
+    cupos_ofrecidos: 30,
+    inscritos: 0,
+    estado: 'Abierto',
   });
 
   useEffect(() => {
@@ -39,6 +42,9 @@ const Edit = () => {
         docente_id: grupoData.docente_id ? grupoData.docente_id.toString() : '',
         gestion_academica_id: grupoData.gestion_academica_id ? grupoData.gestion_academica_id.toString() : '',
         nombre_grupo: grupoData.nombre_grupo || '',
+        cupos_ofrecidos: grupoData.cupos_ofrecidos || 30,
+        inscritos: grupoData.inscritos || 0,
+        estado: grupoData.estado || 'Abierto',
       });
 
       setMaterias(formDataResponse.materias || []);
@@ -282,6 +288,83 @@ const Edit = () => {
                       </svg>
                       {errors.gestion_academica_id[0]}
                     </p>
+                  )}
+                </div>
+
+                {/* Nuevos Campos: Cupos, Inscritos, Estado */}
+                {/* Cupos Ofrecidos */}
+                <div>
+                  <label htmlFor="cupos_ofrecidos" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Cupos Ofrecidos
+                  </label>
+                  <input
+                    type="number"
+                    id="cupos_ofrecidos"
+                    name="cupos_ofrecidos"
+                    value={formData.cupos_ofrecidos}
+                    onChange={handleChange}
+                    min="1"
+                    max="200"
+                    className={`w-full px-4 py-2.5 rounded-lg border ${
+                      errors.cupos_ofrecidos
+                        ? 'border-red-300 bg-red-50 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-blue-500'
+                    } shadow-sm focus:ring-2 focus:outline-none`}
+                    placeholder="Ej: 30"
+                  />
+                  {errors.cupos_ofrecidos && (
+                    <p className="mt-2 text-sm text-red-600">{errors.cupos_ofrecidos[0]}</p>
+                  )}
+                </div>
+
+                {/* Inscritos */}
+                <div>
+                  <label htmlFor="inscritos" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Inscritos
+                  </label>
+                  <input
+                    type="number"
+                    id="inscritos"
+                    name="inscritos"
+                    value={formData.inscritos}
+                    onChange={handleChange}
+                    min="0"
+                    max="200"
+                    className={`w-full px-4 py-2.5 rounded-lg border ${
+                      errors.inscritos
+                        ? 'border-red-300 bg-red-50 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-blue-500'
+                    } shadow-sm focus:ring-2 focus:outline-none`}
+                    placeholder="Ej: 0"
+                  />
+                  {errors.inscritos && (
+                    <p className="mt-2 text-sm text-red-600">{errors.inscritos[0]}</p>
+                  )}
+                </div>
+
+                {/* Estado */}
+                <div>
+                  <label htmlFor="estado" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Estado
+                  </label>
+                  <select
+                    id="estado"
+                    name="estado"
+                    value={formData.estado}
+                    onChange={handleChange}
+                    className={`w-full px-4 py-2.5 rounded-lg border ${
+                      errors.estado
+                        ? 'border-red-300 bg-red-50 focus:ring-red-500'
+                        : 'border-gray-300 focus:ring-blue-500'
+                    } shadow-sm focus:ring-2 focus:outline-none`}
+                  >
+                    <option value="Abierto">Abierto</option>
+                    <option value="Cerrado">Cerrado</option>
+                    <option value="En Curso">En Curso</option>
+                    <option value="Finalizado">Finalizado</option>
+                  </select>
+                  {errors.estado && (
+                    <p className="mt-2 text-sm text-red-600">{errors.estado[0]}</p>
                   )}
                 </div>
               </div>

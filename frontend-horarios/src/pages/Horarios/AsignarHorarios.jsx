@@ -103,10 +103,10 @@ function AsignarHorarios() {
                   {/* Materia */}
                   <div className="mb-4">
                     <h3 className="text-lg font-bold text-purple-700 mb-1">
-                      {grupo.materia?.nombre || 'Sin materia'}
+                      {grupo.materia?.sigla || 'N/A'}
                     </h3>
                     <p className="text-xs text-gray-500">
-                      Código: {grupo.materia?.codigo || 'N/A'}
+                      {grupo.materia?.nombre || 'Sin materia'}
                     </p>
                   </div>
 

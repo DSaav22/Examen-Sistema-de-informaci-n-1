@@ -21,7 +21,6 @@ class Materia extends Model implements Auditable
     protected $fillable = [
         'sigla',
         'nombre',
-        'carrera_id',
         'nivel',
         'creditos',
         'horas_semanales',
@@ -45,11 +44,14 @@ class Materia extends Model implements Auditable
     }
 
     /**
-     * Relación: Una materia pertenece a una carrera
+     * Relación: Una materia pertenece a muchas carreras (Muchos a Muchos)
+     * Tabla pivote: carrera_materia
      */
-    public function carrera()
+    public function carreras()
     {
-        return $this->belongsTo(Carrera::class, 'carrera_id');
+        return $this->belongsToMany(Carrera::class, 'carrera_materia')
+            ->withPivot('semestre_sugerido', 'obligatoria')
+            ->withTimestamps();
     }
 
     /**

@@ -16,7 +16,7 @@ class MateriaController extends Controller
      */
     public function index()
     {
-        $materias = Materia::with(['carrera.facultad'])
+        $materias = Materia::with(['carreras.facultad'])
             ->orderBy('nombre')
             ->paginate(10);
 
@@ -45,7 +45,24 @@ class MateriaController extends Controller
      */
     public function store(StoreMateriaRequest $request): RedirectResponse
     {
-        Materia::create($request->validated());
+        $validated = $request->validated();
+        
+        // Extraer carreras si viene en el request
+        $carreras = $validated['carreras'] ?? [];
+        unset($validated['carreras']);
+        
+        // Crear la materia
+        $materia = Materia::create($validated);
+        
+        // Asociar carreras si hay
+        if (!empty($carreras)) {
+            foreach ($carreras as $carreraData) {
+                $materia->carreras()->attach($carreraData['carrera_id'], [
+                    'semestre_sugerido' => $carreraData['semestre_sugerido'] ?? null,
+                    'obligatoria' => $carreraData['obligatoria'] ?? true,
+                ]);
+            }
+        }
 
         return redirect()->route('materias.index')
             ->with('success', 'Materia creada exitosamente.');
@@ -56,7 +73,7 @@ class MateriaController extends Controller
      */
     public function show(Materia $materia)
     {
-        $materia->load(['carrera.facultad', 'grupos.docente.usuario']);
+        $materia->load(['carreras.facultad', 'grupos.docente.usuario']);
 
         return Inertia::render('Materias/Show', [
             'materia' => $materia,
@@ -73,7 +90,7 @@ class MateriaController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        $materia->load('carrera.facultad');
+        $materia->load('carreras.facultad');
 
         return Inertia::render('Materias/Edit', [
             'materia' => $materia,
@@ -86,7 +103,26 @@ class MateriaController extends Controller
      */
     public function update(UpdateMateriaRequest $request, Materia $materia): RedirectResponse
     {
-        $materia->update($request->validated());
+        $validated = $request->validated();
+        
+        // Extraer carreras si viene en el request
+        $carreras = $validated['carreras'] ?? [];
+        unset($validated['carreras']);
+        
+        // Actualizar la materia
+        $materia->update($validated);
+        
+        // Sincronizar carreras si hay
+        if (!empty($carreras)) {
+            $sync = [];
+            foreach ($carreras as $carreraData) {
+                $sync[$carreraData['carrera_id']] = [
+                    'semestre_sugerido' => $carreraData['semestre_sugerido'] ?? null,
+                    'obligatoria' => $carreraData['obligatoria'] ?? true,
+                ];
+            }
+            $materia->carreras()->sync($sync);
+        }
 
         return redirect()->route('materias.index')
             ->with('success', 'Materia actualizada exitosamente.');
