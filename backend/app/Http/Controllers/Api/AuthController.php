@@ -16,43 +16,61 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Las credenciales proporcionadas son incorrectas.'],
+        // ***** INICIO DE LA MODIFICACIÓN CLAVE *****
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
             ]);
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'email' => ['Las credenciales proporcionadas son incorrectas.'],
+                ]);
+            }
+
+            // Verificar si el usuario está activo
+            if (!$user->activo) {
+                throw ValidationException::withMessages([
+                    'email' => ['Tu cuenta está inactiva. Contacta al administrador.'],
+                ]);
+            }
+
+            // Si usas tokens
+            $token = $user->createToken('auth-token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'rol_id' => $user->rol_id,
+                    'rol' => $user->rol,
+                    'ci' => $user->ci,
+                    'telefono' => $user->telefono,
+                    'activo' => $user->activo,
+                ],
+                'token' => $token,
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Esto es para los errores 422 (validación)
+            return response()->json(['errors' => $e->errors()], 422);
+
+        } catch (\Exception $e) {
+            // ***** ESTA ES LA PARTE IMPORTANTE *****
+            // Captura CUALQUIER otro error 500 (SQL, etc.) y lo muestra
+            return response()->json([
+                'error' => 'Error 500 Interno en Login. Causa Raíz:',
+                'message' => $e->getMessage(), // El error real
+                'file' => $e->getFile(),         // El archivo que "crashó"
+                'line' => $e->getLine()          // La línea exacta del "crash"
+            ], 500);
         }
-
-        // Verificar si el usuario está activo
-        if (!$user->activo) {
-            throw ValidationException::withMessages([
-                'email' => ['Tu cuenta está inactiva. Contacta al administrador.'],
-            ]);
-        }
-
-        // Si usas tokens
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Inicio de sesión exitoso',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'rol_id' => $user->rol_id,
-                'rol' => $user->rol,
-                'ci' => $user->ci,
-                'telefono' => $user->telefono,
-                'activo' => $user->activo,
-            ],
-            'token' => $token,
-        ], 200);
+        // ***** FIN DE LA MODIFICACIÓN CLAVE *****
     }
 
     /**

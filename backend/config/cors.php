@@ -20,14 +20,12 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        // --- SOLUCIÓN DIRECTA ---
+        // Añadimos la URL de producción (Firebase) directamente
+        'https://horarios-477719.web.app', 
+        
+        // Mantenemos el acceso para desarrollo local
         'http://localhost:5173', 
-        'http://localhost:5174', 
-        'http://localhost:3000', 
-        'http://127.0.0.1:5173', 
-        'http://127.0.0.1:5174', 
-        'http://127.0.0.1:3000',
-        'https://sistema-de-horarios-476800.web.app',
-        'https://sistema-de-horarios-476800.firebaseapp.com'
     ],
 
     'allowed_origins_patterns' => [],

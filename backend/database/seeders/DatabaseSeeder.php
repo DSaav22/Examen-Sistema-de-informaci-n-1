@@ -31,42 +31,9 @@ class DatabaseSeeder extends Seeder
             
             // 6. Crear docentes adicionales (depende de roles y usuarios)
             DocenteSeeder::class,
-        ]);
-
-        // Crear usuarios de prueba principales (admin, coordinador, docente)
-        // Estos se crean después de los seeders para tener datos completos
-
-        User::create([
-            'name' => 'Administrador',
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('Admin123.'),
-            'rol_id' => 1, // Rol administrador
-            'ci' => '12345678',
-            'telefono' => '12345678',
-            'activo' => true,
-            'email_verified_at' => now(),
-        ]);
-
-        User::create([
-            'name' => 'Coordinador',
-            'email' => 'coordinador@coordinador.com',
-            'password' => bcrypt('Coordinador123.'),
-            'rol_id' => 2, // Rol coordinador
-            'ci' => '87654321',
-            'telefono' => '87654321',
-            'activo' => true,
-            'email_verified_at' => now(),
-        ]);
-
-        User::create([
-            'name' => 'Docente',
-            'email' => 'docente@docente.com',
-            'password' => bcrypt('Docente123.'),
-            'rol_id' => 3, // Rol docente
-            'ci' => '11223344',
-            'telefono' => '11223344',
-            'activo' => true,
-            'email_verified_at' => now(),
+            
+            // 7. Crear usuarios principales (admin, coordinador, docente)
+            UserSeeder::class,
         ]);
     }
 }
